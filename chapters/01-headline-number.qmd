@@ -1,0 +1,79 @@
+# The headline number
+
+```{r}
+#| include: false
+source("../R/simulate.R"); source("../R/metrics.R"); source("../R/theme_eval.R")
+df <- simulate_predictions()
+```
+
+Here is a model. It was trained to flag a condition from a risk score, it has
+been evaluated on a held-out set of `r nrow(df)` patients, and its performance
+is the one number every such model is eventually reduced to:
+
+```{r}
+auroc(df$label, df$score)
+```
+
+An AUROC of about **0.87**. That is a good model — comfortably better than a
+coin, the kind of number that clears a reviewer, anchors an abstract, and gets
+carried into a slide deck as *the* result. If the story stopped here, it would
+be a reassuring one.
+
+## The average is hiding its variance
+
+The patients in this dataset are not interchangeable. They fall into three
+strata of very different size — think of Fitzpatrick skin types on a
+dermatology model, where the darkest-skinned group is routinely under 5% of the
+training images. Ask the same question inside each stratum:
+
+```{r}
+#| echo: false
+by_group <- sapply(sort(unique(df$group)), function(g) {
+  s <- df[df$group == g, ]
+  auroc(s$label, s$score)
+})
+knitr::kable(
+  data.frame(Group = names(by_group), AUROC = round(by_group, 3)),
+  align = "lr"
+)
+```
+
+The single number was 0.87. Inside the smallest group it is **`r round(by_group["V-VI"], 2)`** — a different
+model, in effect, for the patients who were least present when it was built.
+The pooled figure is not wrong; it is dominated. The largest stratum sets the
+average, and the average then speaks confidently on behalf of a group it barely
+represents.
+
+```{r}
+#| echo: false
+#| fig-cap: "One pooled AUROC (dashed) against the three subgroup values it averages over. The gap widens as the group shrinks."
+d <- data.frame(group = names(by_group), auroc = by_group,
+                n = as.integer(table(df$group)[names(by_group)]))
+ggplot(d, aes(x = auroc, y = reorder(group, auroc))) +
+  geom_vline(xintercept = auroc(df$label, df$score),
+             linetype = "dashed", colour = EVAL_GREY) +
+  geom_segment(aes(x = auroc(df$label, df$score), xend = auroc,
+                   yend = reorder(group, auroc)), colour = EVAL_GREY) +
+  geom_point(aes(colour = group, size = n)) +
+  scale_colour_manual(values = group_cols, guide = "none") +
+  scale_size_continuous(range = c(3, 7), guide = "none") +
+  labs(title = "The headline number is the largest group's number",
+       subtitle = "Dashed line: the single pooled AUROC",
+       x = "AUROC", y = NULL) +
+  theme_eval()
+```
+
+## What this book does about it
+
+Splitting the AUROC by subgroup is the first move, and the rest of this book is
+the argument that it is not nearly enough. A subgroup estimate is still just an
+estimate, and in a stratum of a few dozen events it can be wildly imprecise
+without looking it (Chapter 5). Discrimination — can the model *rank* patients
+— is only one of three questions, and the other two, whether its probabilities
+are *calibrated* (Chapter 6) and whether a single decision *threshold* serves
+every group (Chapter 7), are where transported models usually fail.
+
+To make any of that trustworthy, we need an evaluation harness we can see all
+the way through. That is Chapters 3 and 4: a simulator whose answer we know, and
+an AUROC we wrote ourselves and can prove is right. First, though, we should be
+clear about what the three questions even are.
