@@ -1,0 +1,141 @@
+<!doctype html>
+<!--
+  Source for the repo's 1280x640 social-preview card.
+  Regenerate assets/social-preview.png with headless Chrome:
+
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+    --headless --disable-gpu --hide-scrollbars \
+    --force-device-scale-factor=2 --window-size=1280,640 \
+    --default-background-color=FFFFFFFF \
+    --screenshot=assets/social-preview.png "file://$PWD/assets/card.html"
+
+  Forest-plot marks are positioned from the numbers in R/make_results.R:
+  AUROC 0.50–1.00 maps to x = 170 + (a-0.5)*2120.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root{
+    --ink:#1d2433; --grey:#9aa3b2; --accent:#2f6f9f; --warn:#c8553d;
+    --grid:#e9ebf0; --panel:#fafbfc; --line:#eef0f3;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1280px;height:640px;background:#ffffff;
+    font-family:-apple-system,"Helvetica Neue","Segoe UI",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .card{width:1280px;height:640px;position:relative;padding:44px 40px 0 40px;}
+  .kicker{font-size:15px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;}
+  h1{font-size:47px;line-height:1.02;color:var(--ink);font-weight:800;
+    margin-top:8px;letter-spacing:-.015em;}
+  .sub{font-size:21px;color:var(--grey);margin-top:12px;font-weight:400;}
+  .rule{width:96px;height:5px;background:var(--accent);border-radius:3px;margin-top:16px;}
+  svg{display:block;}
+  .foot{position:absolute;left:40px;right:40px;bottom:26px;
+    display:flex;justify-content:space-between;align-items:center;
+    border-top:1px solid var(--line);padding-top:16px;}
+  .foot .repo{font-size:18px;color:var(--accent);font-weight:600;white-space:nowrap;
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;}
+  .foot .who{font-size:19px;color:var(--grey);white-space:nowrap;}
+  .foot .who b{color:var(--ink);font-weight:700;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="kicker">A worked example in R · from scratch</div>
+  <h1>Model Evaluation from Scratch</h1>
+  <div class="sub">Why one AUROC tells you almost nothing — the interval is the finding, not the estimate.</div>
+  <div class="rule"></div>
+
+  <!-- forest plot: AUROC 0.50–1.00 mapped to x 170..1230 (2120 px per unit) -->
+  <svg width="1200" height="330" viewBox="0 0 1280 330" style="margin-top:14px;margin-left:-40px;">
+    <!-- framing panel -->
+    <rect x="150" y="8" width="1096" height="300" rx="12" fill="var(--panel)" stroke="var(--line)"/>
+
+    <!-- vertical gridlines at 0.5..1.0 -->
+    <g stroke="var(--grid)" stroke-width="1">
+      <line x1="170" y1="28" x2="170" y2="270"/>
+      <line x1="382" y1="28" x2="382" y2="270"/>
+      <line x1="594" y1="28" x2="594" y2="270"/>
+      <line x1="806" y1="28" x2="806" y2="270"/>
+      <line x1="1018" y1="28" x2="1018" y2="270"/>
+      <line x1="1230" y1="28" x2="1230" y2="270"/>
+    </g>
+    <!-- x tick labels -->
+    <g font-size="18" fill="var(--grey)" text-anchor="middle" font-family="inherit">
+      <text x="170" y="294">0.50</text>
+      <text x="382" y="294">0.60</text>
+      <text x="594" y="294">0.70</text>
+      <text x="806" y="294">0.80</text>
+      <text x="1018" y="294">0.90</text>
+      <text x="1230" y="294">1.00</text>
+    </g>
+
+    <!-- pooled AUROC dashed line at 0.867 -> x=948 -->
+    <line x1="948" y1="24" x2="948" y2="272" stroke="var(--grey)" stroke-width="2" stroke-dasharray="7 6"/>
+    <text x="948" y="20" font-size="17" fill="var(--grey)" text-anchor="middle" font-family="inherit">pooled AUROC 0.87</text>
+
+    <!-- row labels -->
+    <g font-size="26" fill="var(--ink)" font-weight="700" text-anchor="start" font-family="inherit">
+      <text x="34" y="79">I–II</text>
+      <text x="34" y="159">III–IV</text>
+      <text x="34" y="239">V–VI</text>
+    </g>
+    <!-- row sizes -->
+    <g font-size="15" fill="var(--grey)" text-anchor="start" font-family="inherit">
+      <text x="34" y="99">377 events</text>
+      <text x="34" y="179">181 events</text>
+      <text x="34" y="259">39 events</text>
+    </g>
+
+    <!-- I-II row  y=70  est0.897/1012  lo971/hi1046  true0.892/1001 -->
+    <g stroke="var(--ink)" stroke-width="3">
+      <line x1="971" y1="70" x2="1046" y2="70"/>
+      <line x1="971" y1="61" x2="971" y2="79"/>
+      <line x1="1046" y1="61" x2="1046" y2="79"/>
+    </g>
+    <circle cx="1012" cy="70" r="10" fill="var(--accent)"/>
+    <line x1="994" y1="58" x2="1008" y2="82" stroke="var(--warn)" stroke-width="3.4"/>
+    <line x1="994" y1="82" x2="1008" y2="58" stroke="var(--warn)" stroke-width="3.4"/>
+
+    <!-- III-IV row y=150 est0.855/923 lo857/hi982 true906 -->
+    <g stroke="var(--ink)" stroke-width="3">
+      <line x1="857" y1="150" x2="982" y2="150"/>
+      <line x1="857" y1="141" x2="857" y2="159"/>
+      <line x1="982" y1="141" x2="982" y2="159"/>
+    </g>
+    <line x1="899" y1="138" x2="913" y2="162" stroke="var(--warn)" stroke-width="3"/>
+    <line x1="899" y1="162" x2="913" y2="138" stroke="var(--warn)" stroke-width="3"/>
+    <circle cx="923" cy="150" r="10" fill="var(--accent)"/>
+
+    <!-- V-VI row y=230 est0.655/499 lo285/hi700 true624 (underpowered = warn dot) -->
+    <g stroke="var(--ink)" stroke-width="3">
+      <line x1="285" y1="230" x2="700" y2="230"/>
+      <line x1="285" y1="221" x2="285" y2="239"/>
+      <line x1="700" y1="221" x2="700" y2="239"/>
+    </g>
+    <line x1="617" y1="218" x2="631" y2="242" stroke="var(--warn)" stroke-width="3"/>
+    <line x1="617" y1="242" x2="631" y2="218" stroke="var(--warn)" stroke-width="3"/>
+    <circle cx="499" cy="230" r="11" fill="var(--warn)"/>
+    <text x="493" y="212" font-size="15" fill="var(--warn)" text-anchor="middle" font-family="inherit" font-weight="600">underpowered</text>
+  </svg>
+
+  <!-- legend -->
+  <div style="display:flex;gap:38px;align-items:center;margin-top:2px;margin-left:110px;
+              font-size:18px;color:var(--ink);">
+    <span><span style="display:inline-block;width:16px;height:16px;border-radius:50%;
+      background:#2f6f9f;vertical-align:-2px;margin-right:9px;"></span>subgroup estimate</span>
+    <span><span style="display:inline-block;color:#c8553d;font-weight:800;font-size:22px;
+      margin-right:8px;">✕</span>true AUROC (known by design)</span>
+    <span><span style="display:inline-block;width:16px;height:16px;border-radius:50%;
+      background:#c8553d;vertical-align:-2px;margin-right:9px;"></span>underpowered stratum</span>
+  </div>
+
+  <div class="foot">
+    <div class="repo">github.com/Lexiyao/model-evaluation-from-scratch</div>
+    <div class="who"><b>Zixi (Lexi) Yao</b> · base R, zero dependencies · 13/13 estimators validated</div>
+  </div>
+</div>
+</body>
+</html>
