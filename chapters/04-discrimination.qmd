@@ -1,0 +1,87 @@
+# Discrimination from scratch
+
+```{r}
+#| include: false
+source("../R/simulate.R"); source("../R/metrics.R"); source("../R/theme_eval.R")
+df <- simulate_predictions()
+tt <- truth_table()
+```
+
+The AUROC is usually drawn as the area under a curve of sensitivity against
+one-minus-specificity, swept over every threshold. That picture is fine, but it
+hides how simple the quantity is. The area under the ROC curve is *exactly* the
+probability that a randomly chosen event scores higher than a randomly chosen
+non-event. Stated that way, it is a rank statistic, and it can be computed in
+one line.
+
+## The whole estimator
+
+```{r}
+auroc
+```
+
+Rank all the scores; sum the ranks belonging to the events; subtract the ranks
+those events would occupy if they were all crammed at the bottom
+($n_1(n_1+1)/2$); divide by the number of event/non-event pairs $n_1 n_0$. What
+comes out is the fraction of pairs the model orders correctly — the
+Mann-Whitney U statistic, rescaled. Ties contribute exactly one half, and using
+average ranks builds that half-credit in with no special case.
+
+## Is it right? Two checks
+
+A one-line estimator is easy to get subtly wrong, so we never take it on faith.
+First, against a completely different code path — `wilcox.test`, which computes
+the same U statistic through R's own rank machinery:
+
+```{r}
+w <- wilcox.test(score ~ factor(label), data = df, exact = FALSE)
+u_ref <- unname(w$statistic) / (sum(df$label == 0) * sum(df$label == 1))
+c(ours = auroc(df$label, df$score), wilcox = 1 - u_ref)
+```
+
+Identical to machine precision. That pins the *implementation*. But a
+numerically perfect estimator of the wrong quantity is still wrong, so the
+second check is against the truth the simulator planted — the analytic
+$\Phi(d/\sqrt{2})$ from the previous chapter:
+
+```{r}
+#| echo: false
+est <- sapply(tt$group, function(g) {
+  s <- df[df$group == g, ]; auroc(s$label, s$score)
+})
+knitr::kable(
+  data.frame(Group = tt$group, `True AUROC` = round(tt$true_auroc, 3),
+             Estimate = round(est, 3),
+             Error = round(est - tt$true_auroc, 3), check.names = FALSE),
+  align = "lrrr"
+)
+```
+
+Close everywhere, and closest where the sample is largest — exactly the
+behaviour a consistent estimator should show. The estimate in `V-VI` is
+**`r round(est["V-VI"], 3)`** against a truth of `r round(tt$true_auroc[tt$group == "V-VI"], 3)`: an error of
+`r round(est["V-VI"] - tt$true_auroc[tt$group == "V-VI"], 3)` on 160 patients. Whether that gap is
+alarming or just sampling noise is not a question the point estimate can
+answer, and it is the subject of the next chapter.
+
+## What discrimination cannot see
+
+Because it is built from ranks, the AUROC is invariant to any strictly
+increasing transformation of the score. Running it on the raw latent value and
+on the squeezed probability gives the same answer to the last digit:
+
+```{r}
+c(on_probability = auroc(df$label, df$score),
+  on_latent      = auroc(df$label, df$latent))
+```
+
+This is a feature and a warning at once. A feature, because it means a badly
+scaled or miscalibrated model can still discriminate perfectly, and ranking is
+the one property recalibration cannot destroy. A warning, because it means the
+AUROC is structurally blind to whether the probabilities mean anything at all.
+A model can post an AUROC of `r round(auroc(df$label, df$score), 2)` and still be uninterpretable and
+unsafe at any given threshold.
+
+AUROC sees the order and nothing else. To find out whether the numbers
+themselves can be trusted — and whether the `r round(est["V-VI"], 3)` in `V-VI` is real — we need to
+put a confidence interval on it, and then a second question entirely.
