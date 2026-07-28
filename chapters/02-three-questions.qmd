@@ -1,0 +1,61 @@
+# Three questions, not one
+
+A model that outputs a probability is asked to do three different jobs, and it
+can do any one of them well while failing the others. "Is it a good model?" is
+really three questions wearing one coat [@steyerberg2010].
+
+## 1. Discrimination — can it rank?
+
+Given an event and a non-event, does the model score the event higher? This is
+ranking, and nothing else. It asks whether the model puts patients in the right
+*order*, and it is completely indifferent to what the numbers on that order
+actually are. A model whose every probability is divided by ten discriminates
+exactly as well as before.
+
+AUROC measures this, and only this. Chapter 4 builds it. Its blind spot is
+everything to do with the numbers themselves, which is the whole of the next
+question.
+
+## 2. Calibration — do the numbers mean what they say?
+
+When the model says 0.8, does the event happen about 80% of the time? A model
+can rank perfectly and still be badly calibrated — confident when it should be
+cautious, or the reverse — and you cannot tell from the AUROC, because ranking
+survives any monotone rescaling of the score.
+
+Calibration is the question that matters the moment a probability is read as a
+probability: fed to a threshold, shown to a clinician, multiplied into an
+expected cost. It is also, reliably, the first thing to break when a model
+trained in one population meets another, and the last thing anyone reports
+[@vancalster2019]. Chapter 6 builds two ways to measure it, and shows them
+disagreeing.
+
+## 3. Utility — is it worth using here?
+
+Even a well-ranked, well-calibrated model has to earn its place against the
+decision it informs. Acting on a prediction has costs — a false alarm is not
+free, and neither is a missed case — and those costs are not symmetric and not
+the same in every setting. Decision-analytic tools such as net benefit weigh
+them explicitly [@vickers2006].
+
+This book concentrates on the first two questions, where most evaluation
+mistakes are made, and treats utility through its most common proxy: the
+operating threshold. Chapter 7 shows that a single fixed threshold — "refer if
+p > 0.7" — is itself a utility judgement, and one that quietly costs different
+groups very different amounts.
+
+## Why the separation matters
+
+Keeping the three apart is not pedantry; it is what lets you locate a failure.
+
+| A model can be… | …while being… | Symptom |
+|---|---|---|
+| well-ranked | miscalibrated | AUROC fine, probabilities untrustworthy |
+| calibrated on average | miscalibrated per subgroup | pooled numbers reassuring, group numbers not |
+| ranked and calibrated | wrong for this decision | good metrics, poor net benefit at the used threshold |
+
+Every chapter that follows is an instance of this table. The tools differ; the
+lesson does not: a single number answers a single question, and there are three.
+
+With the questions named, we need somewhere to answer them where we already
+know the answer. That is the simulator.
