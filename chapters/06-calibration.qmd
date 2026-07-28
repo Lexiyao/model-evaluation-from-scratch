@@ -1,0 +1,102 @@
+# Calibration, and a metric that lies
+
+```{r}
+#| include: false
+source("../R/simulate.R"); source("../R/metrics.R"); source("../R/theme_eval.R")
+df <- simulate_predictions()
+rep <- stratified_report(df, n_boot = 500L)
+```
+
+Chapter 4 established that AUROC cannot see the numbers, only their order.
+This chapter asks the question it cannot answer: when the model says 0.8,
+does the event happen 80% of the time?
+
+## Two ways to measure it
+
+**The calibration slope** regresses the outcome on the logit of the predicted
+probability. Perfect calibration gives slope 1, intercept 0. Slope below 1
+means predictions are too extreme; above 1, too conservative.
+
+```{r}
+calibration
+```
+
+**Expected calibration error** bins the predictions and averages the absolute
+gap between predicted and observed rates within each bin. It is the metric
+most commonly reported in the machine-learning literature.
+
+```{r}
+ece
+```
+
+Both are reasonable. On this data they disagree completely.
+
+## The disagreement
+
+```{r}
+#| echo: false
+knitr::kable(rep[, c("group","cal_slope","ece","brier","auroc")], digits = 3,
+             col.names = c("Group","Calibration slope","ECE","Brier","AUROC"))
+```
+
+The slope says `V-VI` is badly miscalibrated — 0.50 against 1.85 in `I-II`.
+These are opposite failures: predictions too extreme in one group, too
+conservative in the other. Pooled, they average to 1.60, a number describing
+no one in the dataset.
+
+ECE says all three groups are the same, to within 0.06.
+
+## Why ECE misses it
+
+ECE takes an absolute value inside each bin. Systematic over-prediction in
+one part of the score range and under-prediction in another therefore
+contribute in the same direction rather than revealing that the whole
+relationship is tilted. It measures *how far off* predictions are, not
+*in which direction, systematically*.
+
+The slope, being a regression coefficient, sees the tilt directly.
+
+```{r}
+#| echo: false
+#| fig-cap: "Observed event rate against predicted probability, by stratum. The diagonal is perfect calibration."
+bins <- cut(df$score, breaks = seq(0, 1, 0.1), include.lowest = TRUE)
+cal <- aggregate(cbind(obs = label, pred = score) ~ bins + group, data = df, FUN = mean)
+n_bin <- aggregate(label ~ bins + group, data = df, FUN = length)
+cal$n <- n_bin$label
+ggplot(cal[cal$n >= 5, ], aes(pred, obs, colour = group)) +
+  geom_abline(linetype = "dashed", colour = EVAL_GREY) +
+  geom_line(linewidth = 0.7) +
+  geom_point(aes(size = n)) +
+  scale_colour_manual(values = group_cols) +
+  scale_size_continuous(range = c(1.2, 4.5), guide = "none") +
+  coord_equal(xlim = c(0, 1), ylim = c(0, 1)) +
+  labs(title = "One line is flat, and one metric didn't notice",
+       subtitle = "Point size is bin count",
+       x = "Predicted probability", y = "Observed event rate") +
+  theme_eval()
+```
+
+The `V-VI` line is visibly flatter than the diagonal: as the model's
+confidence rises, the observed rate barely follows. That is a slope of 0.5,
+drawn.
+
+## Why this matters more than discrimination
+
+If the model feeds a ranked worklist, miscalibration is survivable — order is
+preserved. If it feeds a **threshold**, it is not. A referral rule of
+"investigate if p > 0.7" assumes 0.7 means the same thing in every patient.
+Here it does not, and the group where it means least is the group already
+least likely to have been examined by a specialist.
+
+This is the standard signature of a transported model, and it is why
+calibration is the first thing to break and the last thing to be reported
+[@vancalster2019]. TRIPOD+AI now asks for calibration to be reported
+explicitly, with a plot, for exactly this reason [@collins2024].
+
+::: {.callout-note}
+## Report both, and the plot
+
+The slope and intercept catch systematic tilt; ECE catches local wobble; the
+plot catches things neither summarises. Anyone reporting a single calibration
+number is choosing which failures they are willing to miss.
+:::
