@@ -1,0 +1,45 @@
+project:
+  type: book
+  output-dir: docs
+  pre-render: R/make_results.R
+
+book:
+  title: "Model Evaluation from Scratch"
+  subtitle: "Why one AUROC tells you almost nothing"
+  author: "Zixi Yao"
+  date: today
+  repo-url: https://github.com/Lexiyao/model-evaluation-from-scratch
+  repo-actions: [source, issue]
+  search: true
+  chapters:
+    - index.qmd
+    - chapters/01-headline-number.qmd
+    - chapters/02-three-questions.qmd
+    - chapters/03-the-data.qmd
+    - chapters/04-discrimination.qmd
+    - chapters/05-uncertainty.qmd
+    - chapters/06-calibration.qmd
+    - chapters/07-thresholds.qmd
+    - chapters/08-takeaways.qmd
+  page-footer:
+    left: "MIT © 2026 Zixi Yao"
+    right: "Built with Quarto"
+
+bibliography: references.bib
+csl: https://www.zotero.org/styles/vancouver
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    code-fold: false
+    code-tools: true
+    fig-width: 7
+    fig-height: 4.5
+    fig-align: center
+
+execute:
+  freeze: auto
+  warning: false
+  message: false

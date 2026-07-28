@@ -1,0 +1,21 @@
+# R
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+# macOS
+.DS_Store
+
+# Generated output — recreated from the seed by R/make_results.R
+data/predictions.csv
+
+# Quarto freeze cache and intermediate files
+/_freeze/
+*.rmarkdown
+
+# Note: docs/ is committed on purpose — it is the GitHub Pages source.
+
+/.quarto/
+**/*.quarto_ipynb
