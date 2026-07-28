@@ -1,0 +1,61 @@
+# Preface {.unnumbered}
+
+A clinical prediction model is usually reported as a single number: an AUROC of
+0.87, say, printed once in an abstract and carried forward as if it described
+everyone the model will ever touch. It does not. That number is an average over
+a population, and an average is exactly the wrong summary when the question is
+whether the model works for the people least represented in the data that built
+it.
+
+This is a short, end-to-end walkthrough that builds the standard
+model-evaluation toolkit **from scratch**, one estimator at a time, in plain
+base R:
+
+- AUROC, as the rank statistic it actually is;
+- the calibration slope, and the expected calibration error that so often
+  disagrees with it;
+- a bootstrap that respects the outcome classes it resamples;
+- equalised-odds gaps and per-group thresholds;
+- and a power calculation for the subgroup differences everyone reports and
+  almost no one is powered to detect.
+
+Nothing is hidden inside a package. Every metric is a few lines you can read,
+change, and break, and every one is checked in `R/_test_engine.R` against an
+independent reference — `wilcox.test`, `glm` — or against an answer known in
+closed form.
+
+::: {.callout-note}
+## All data here are simulated
+
+No patient record, cohort, or image dataset is used or shared anywhere in this
+project. The simulation is not a shortcut; it is the point. Because the true
+AUROC in each subgroup is chosen up front and has a closed form — Φ(d/√2) for
+binormal scores with separation *d* — every estimate in these pages can be
+judged against the right answer rather than against another estimate. You
+cannot do that with real data, because with real data you never know the
+truth.
+:::
+
+## How to read it
+
+The chapters build in order. Chapter 1 shows the headline number and what it
+hides. Chapters 2 and 3 set up the three questions any evaluation must answer
+and the simulated world we will answer them in. Chapters 4 through 7 build the
+tools — discrimination, uncertainty, calibration, thresholds — and Chapter 8 is
+a checklist you can take to the next model-evaluation paper you read.
+
+The fastest way to understand any of it is to break the simulation on purpose.
+Open `R/simulate.R`, change the separation `d` in one stratum, or shrink an `n`
+until the interval swallows the effect, and re-render. The estimators will tell
+you what you did.
+
+## Running the code
+
+```bash
+Rscript R/_test_engine.R   # validate every estimator against its reference
+Rscript R/make_results.R   # regenerate every number in the book
+quarto render              # build the site into docs/
+```
+
+The estimators are pure base R with no package dependencies; `ggplot2` is used
+only to draw the figures.
