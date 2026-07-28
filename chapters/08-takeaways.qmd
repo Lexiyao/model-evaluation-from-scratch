@@ -1,0 +1,77 @@
+# Takeaways
+
+```{r}
+#| include: false
+source("../R/simulate.R"); source("../R/metrics.R")
+df <- simulate_predictions()
+rep <- stratified_report(df, n_boot = 2000L)
+```
+
+Everything in this book came from one modest model evaluated on one simulated
+dataset, and every apparent problem was already latent in a headline AUROC of
+`r round(rep$auroc[rep$group == "__overall__"], 2)`. Pulling that number apart, three times over, is the whole method.
+
+## A checklist for the next paper you read
+
+When a model-evaluation table crosses your desk, these are the questions the
+preceding chapters were designed to make reflexive.
+
+1. **Is the headline number pooled?** If so, it is the largest subgroup's
+   number wearing everyone's name. Ask for the breakdown (Chapter 1).
+
+2. **Are subgroup estimates reported with intervals, and do the intervals use
+   events, not rows?** A stratum of 5,000 patients with 39 events is a stratum
+   of 39. The interval, not the point, is the finding (Chapters 4–5).
+
+3. **Does "no significant difference between subgroups" come with a power
+   statement?** Without one it is the expected result of an underpowered test,
+   not evidence of equivalence. The moderate, plausible gap is exactly the one
+   these comparisons are blind to (Chapter 5).
+
+4. **Is calibration reported at all — and with a slope or plot, not only ECE?**
+   A single magnitude metric cannot see a systematic tilt, and cannot see it
+   *differing between groups* (Chapter 6). TRIPOD+AI now asks for this
+   explicitly [@collins2024].
+
+5. **What threshold is used, and what does it cost each group?** A shared cutoff
+   is a policy that equalises false positives and unequal-ises sensitivity.
+   Name the operating point and its per-subgroup sensitivity and specificity
+   (Chapter 7).
+
+6. **Could you reproduce any of it?** A seed, the code, and the estimators in
+   the open are the difference between a claim and a result.
+
+## What this book did not do, on purpose
+
+The point of validating on simulated data is to be honest about limits, so here
+are the ones that matter.
+
+- **The bootstrap undercovers.** Measured, not assumed: across 200 replicate
+  `V-VI` datasets, nominal 95% intervals held the truth about **89.5%** of the
+  time. The intervals throughout are therefore, if anything, a little too
+  narrow — which only strengthens the argument. BCa or the analytic
+  Hanley–McNeil variance [@hanley1982; @efron1987] is the next step.
+
+- **The world is friendlier than reality.** Scores are equal-variance binormal
+  and prevalence is held constant across strata. Both make the estimators'
+  lives easier; a messier distribution can only widen the gaps shown here, not
+  invent them. Holding prevalence fixed was a choice to isolate separation from
+  base rate, not a claim that real subgroups share a base rate.
+
+- **Utility is treated only through the threshold.** A full decision-curve or
+  net-benefit analysis [@vickers2006] would weigh the asymmetric costs of a
+  false alarm against a missed case directly, and is the natural sequel to
+  Chapter 7.
+
+- **The point estimates are illustrative.** The deliverable is the *behaviour of
+  the estimators* — where they recover truth and where they quietly fail — not
+  a claim that any real model has an AUROC of 0.66 in any real group.
+
+## The one habit worth keeping
+
+Write the estimator down. Every metric in this book is a handful of readable
+lines checked against a reference it did not come from — `wilcox.test`, `glm`,
+or an answer known in closed form. That is not nostalgia for base R. It is that
+an evaluation is an argument, and an argument you cannot see all the way through
+is one you cannot defend. The fastest way to believe any of it is still to open
+`R/simulate.R`, break the world on purpose, and watch the numbers tell on you.
