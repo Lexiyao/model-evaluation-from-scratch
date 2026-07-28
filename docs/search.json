@@ -1,0 +1,292 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Model Evaluation from Scratch",
+    "section": "",
+    "text": "Preface\nA clinical prediction model is usually reported as a single number: an AUROC of 0.87, say, printed once in an abstract and carried forward as if it described everyone the model will ever touch. It does not. That number is an average over a population, and an average is exactly the wrong summary when the question is whether the model works for the people least represented in the data that built it.\nThis is a short, end-to-end walkthrough that builds the standard model-evaluation toolkit from scratch, one estimator at a time, in plain base R:\nNothing is hidden inside a package. Every metric is a few lines you can read, change, and break, and every one is checked in R/_test_engine.R against an independent reference — wilcox.test, glm — or against an answer known in closed form.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#how-to-read-it",
+    "href": "index.html#how-to-read-it",
+    "title": "Model Evaluation from Scratch",
+    "section": "How to read it",
+    "text": "How to read it\nThe chapters build in order. Chapter 1 shows the headline number and what it hides. Chapters 2 and 3 set up the three questions any evaluation must answer and the simulated world we will answer them in. Chapters 4 through 7 build the tools — discrimination, uncertainty, calibration, thresholds — and Chapter 8 is a checklist you can take to the next model-evaluation paper you read.\nThe fastest way to understand any of it is to break the simulation on purpose. Open R/simulate.R, change the separation d in one stratum, or shrink an n until the interval swallows the effect, and re-render. The estimators will tell you what you did.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "index.html#running-the-code",
+    "href": "index.html#running-the-code",
+    "title": "Model Evaluation from Scratch",
+    "section": "Running the code",
+    "text": "Running the code\nRscript R/_test_engine.R   # validate every estimator against its reference\nRscript R/make_results.R   # regenerate every number in the book\nquarto render              # build the site into docs/\nThe estimators are pure base R with no package dependencies; ggplot2 is used only to draw the figures.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "chapters/01-headline-number.html",
+    "href": "chapters/01-headline-number.html",
+    "title": "1  The headline number",
+    "section": "",
+    "text": "1.1 The average is hiding its variance\nHere is a model. It was trained to flag a condition from a risk score, it has been evaluated on a held-out set of 2860 patients, and its performance is the one number every such model is eventually reduced to:\nAn AUROC of about 0.87. That is a good model — comfortably better than a coin, the kind of number that clears a reviewer, anchors an abstract, and gets carried into a slide deck as the result. If the story stopped here, it would be a reassuring one.\nThe patients in this dataset are not interchangeable. They fall into three strata of very different size — think of Fitzpatrick skin types on a dermatology model, where the darkest-skinned group is routinely under 5% of the training images. Ask the same question inside each stratum:\nGroup\nAUROC\n\n\n\n\nI-II\nI-II\n0.897\n\n\nIII-IV\nIII-IV\n0.855\n\n\nV-VI\nV-VI\n0.655\nThe single number was 0.87. Inside the smallest group it is 0.66 — a different model, in effect, for the patients who were least present when it was built. The pooled figure is not wrong; it is dominated. The largest stratum sets the average, and the average then speaks confidently on behalf of a group it barely represents.\nOne pooled AUROC (dashed) against the three subgroup values it averages over. The gap widens as the group shrinks.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>The headline number</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-headline-number.html#what-this-book-does-about-it",
+    "href": "chapters/01-headline-number.html#what-this-book-does-about-it",
+    "title": "1  The headline number",
+    "section": "1.2 What this book does about it",
+    "text": "1.2 What this book does about it\nSplitting the AUROC by subgroup is the first move, and the rest of this book is the argument that it is not nearly enough. A subgroup estimate is still just an estimate, and in a stratum of a few dozen events it can be wildly imprecise without looking it (Chapter 5). Discrimination — can the model rank patients — is only one of three questions, and the other two, whether its probabilities are calibrated (Chapter 6) and whether a single decision threshold serves every group (Chapter 7), are where transported models usually fail.\nTo make any of that trustworthy, we need an evaluation harness we can see all the way through. That is Chapters 3 and 4: a simulator whose answer we know, and an AUROC we wrote ourselves and can prove is right. First, though, we should be clear about what the three questions even are.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>The headline number</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-three-questions.html",
+    "href": "chapters/02-three-questions.html",
+    "title": "2  Three questions, not one",
+    "section": "",
+    "text": "2.1 1. Discrimination — can it rank?\nA model that outputs a probability is asked to do three different jobs, and it can do any one of them well while failing the others. “Is it a good model?” is really three questions wearing one coat (1).\nGiven an event and a non-event, does the model score the event higher? This is ranking, and nothing else. It asks whether the model puts patients in the right order, and it is completely indifferent to what the numbers on that order actually are. A model whose every probability is divided by ten discriminates exactly as well as before.\nAUROC measures this, and only this. Chapter 4 builds it. Its blind spot is everything to do with the numbers themselves, which is the whole of the next question.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Three questions, not one</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-three-questions.html#calibration-do-the-numbers-mean-what-they-say",
+    "href": "chapters/02-three-questions.html#calibration-do-the-numbers-mean-what-they-say",
+    "title": "2  Three questions, not one",
+    "section": "2.2 2. Calibration — do the numbers mean what they say?",
+    "text": "2.2 2. Calibration — do the numbers mean what they say?\nWhen the model says 0.8, does the event happen about 80% of the time? A model can rank perfectly and still be badly calibrated — confident when it should be cautious, or the reverse — and you cannot tell from the AUROC, because ranking survives any monotone rescaling of the score.\nCalibration is the question that matters the moment a probability is read as a probability: fed to a threshold, shown to a clinician, multiplied into an expected cost. It is also, reliably, the first thing to break when a model trained in one population meets another, and the last thing anyone reports (2). Chapter 6 builds two ways to measure it, and shows them disagreeing.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Three questions, not one</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-three-questions.html#utility-is-it-worth-using-here",
+    "href": "chapters/02-three-questions.html#utility-is-it-worth-using-here",
+    "title": "2  Three questions, not one",
+    "section": "2.3 3. Utility — is it worth using here?",
+    "text": "2.3 3. Utility — is it worth using here?\nEven a well-ranked, well-calibrated model has to earn its place against the decision it informs. Acting on a prediction has costs — a false alarm is not free, and neither is a missed case — and those costs are not symmetric and not the same in every setting. Decision-analytic tools such as net benefit weigh them explicitly (3).\nThis book concentrates on the first two questions, where most evaluation mistakes are made, and treats utility through its most common proxy: the operating threshold. Chapter 7 shows that a single fixed threshold — “refer if p &gt; 0.7” — is itself a utility judgement, and one that quietly costs different groups very different amounts.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Three questions, not one</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-three-questions.html#why-the-separation-matters",
+    "href": "chapters/02-three-questions.html#why-the-separation-matters",
+    "title": "2  Three questions, not one",
+    "section": "2.4 Why the separation matters",
+    "text": "2.4 Why the separation matters\nKeeping the three apart is not pedantry; it is what lets you locate a failure.\n\n\n\n\n\n\n\n\nA model can be…\n…while being…\nSymptom\n\n\n\n\nwell-ranked\nmiscalibrated\nAUROC fine, probabilities untrustworthy\n\n\ncalibrated on average\nmiscalibrated per subgroup\npooled numbers reassuring, group numbers not\n\n\nranked and calibrated\nwrong for this decision\ngood metrics, poor net benefit at the used threshold\n\n\n\nEvery chapter that follows is an instance of this table. The tools differ; the lesson does not: a single number answers a single question, and there are three.\nWith the questions named, we need somewhere to answer them where we already know the answer. That is the simulator.\n\n\n\n\n\n\n1. Ewout W. Steyerberg, Andrew J. Vickers, Nancy R. Cook, Thomas Gerds, Mithat Gonen, Nancy Obuchowski, Michael J. Pencina, Michael W. Kattan. Assessing the performance of prediction models: A framework for traditional and novel measures. Epidemiology. 2010;21(1):128–38. doi:10.1097/EDE.0b013e3181c30fb2\n\n\n2. Ben Van Calster, David J. McLernon, Maarten van Smeden, Laure Wynants, Ewout W. Steyerberg. Calibration: The Achilles heel of predictive analytics. BMC Medicine. 2019;17:230. doi:10.1186/s12916-019-1466-7\n\n\n3. Andrew J. Vickers, Elena B. Elkin. Decision curve analysis: A novel method for evaluating prediction models. Medical Decision Making. 2006;26(6):565–74. doi:10.1177/0272989X06295361",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Three questions, not one</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-the-data.html",
+    "href": "chapters/03-the-data.html",
+    "title": "3  The data, and its known answer",
+    "section": "",
+    "text": "3.1 A generator with a closed-form truth\nTo trust a measuring instrument, you calibrate it against something whose length you already know. Real evaluation data can never be that reference, because with real data the truth — the model’s actual discrimination in each subgroup — is precisely what you are trying to estimate and never get to see. So we simulate, and we simulate in a way that hands us the answer up front.\nThe design is deliberately plain. Within each stratum, non-events get a latent score drawn from a standard normal, and events get one shifted up by a separation d:\nsimulate_predictions\n\nfunction (groups = GROUPS, prevalence = PREVALENCE, seed = SEED) \n{\n    set.seed(seed)\n    out &lt;- vector(\"list\", length(groups))\n    for (i in seq_along(groups)) {\n        g &lt;- names(groups)[i]\n        n &lt;- groups[[i]]$n\n        d &lt;- groups[[i]]$d\n        y &lt;- rbinom(n, 1, prevalence)\n        latent &lt;- rnorm(n, mean = y * d, sd = 1)\n        out[[i]] &lt;- data.frame(id = sprintf(\"%s_%05d\", g, seq_len(n)), \n            group = g, label = y, latent = latent, score = plogis(latent), \n            stringsAsFactors = FALSE)\n    }\n    df &lt;- do.call(rbind, out)\n    df[sample(nrow(df)), ]\n}\n&lt;bytecode: 0x11435b860&gt;\nThe move that makes the whole book possible is this: for two normals of equal variance separated by d, the probability that a draw from the event distribution exceeds a draw from the non-event distribution — which is the AUROC — has a closed form.\n\\[\n\\text{AUROC} \\;=\\; P(X_{\\text{event}} &gt; X_{\\text{non-event}})\n            \\;=\\; \\Phi\\!\\left(\\frac{d}{\\sqrt{2}}\\right)\n\\]\ntrue_auroc\n\nfunction (d) \n{\n    pnorm(d/sqrt(2))\n}\n&lt;bytecode: 0x1098e3af8&gt;\nSo we do not have to wonder whether an estimate is good. We can subtract it from the right answer.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>The data, and its known answer</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/03-the-data.html#the-three-strata",
+    "href": "chapters/03-the-data.html#the-three-strata",
+    "title": "3  The data, and its known answer",
+    "section": "3.2 The three strata",
+    "text": "3.2 The three strata\nThe separations and sizes are chosen to caricature a common situation: a model that is sharp in the group that dominates the data and dull in the group that does not, with the small group also being the one where the signal is genuinely weaker.\n\n\n\n\n\nGroup\nn\nSeparation d\nTrue AUROC\n\n\n\n\nI-II\n1800\n1.75\n0.892\n\n\nIII-IV\n900\n1.45\n0.847\n\n\nV-VI\n160\n0.80\n0.714\n\n\n\n\n\nTwo things are held fixed on purpose. The prevalence is the same 0.22 in every stratum, so that no performance gap can later be blamed on a difference in base rates — the gap will be about separation and sample size, nothing else. And the seed is fixed, so every number in this book is reproducible to the digit.\n\n\n\n\n\nLatent score distributions by outcome, within each stratum. As the separation d shrinks, the two distributions overlap more, and the model’s job gets harder.\n\n\n\n\nIn I-II the two distributions barely touch; in V-VI they sit almost on top of each other. That overlap is the true AUROC of 0.714, drawn.\nThe score column the rest of the book uses is just this latent value squeezed through plogis() onto the 0–1 probability scale — a stand-in for a model that is imperfectly calibrated, which becomes the subject of Chapter 6. Everything downstream reads only label and score, exactly as it would for a real model’s output.\nWith a world whose answer we know, we can now write an estimator and prove it recovers that answer.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>The data, and its known answer</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-discrimination.html",
+    "href": "chapters/04-discrimination.html",
+    "title": "4  Discrimination from scratch",
+    "section": "",
+    "text": "4.1 The whole estimator\nThe AUROC is usually drawn as the area under a curve of sensitivity against one-minus-specificity, swept over every threshold. That picture is fine, but it hides how simple the quantity is. The area under the ROC curve is exactly the probability that a randomly chosen event scores higher than a randomly chosen non-event. Stated that way, it is a rank statistic, and it can be computed in one line.\nauroc\n\nfunction (label, score) \n{\n    if (length(unique(label)) &lt; 2L) \n        return(NA_real_)\n    n1 &lt;- sum(label == 1L)\n    n0 &lt;- sum(label == 0L)\n    r &lt;- rank(score)\n    (sum(r[label == 1L]) - n1 * (n1 + 1)/2)/(n1 * n0)\n}\nRank all the scores; sum the ranks belonging to the events; subtract the ranks those events would occupy if they were all crammed at the bottom (\\(n_1(n_1+1)/2\\)); divide by the number of event/non-event pairs \\(n_1 n_0\\). What comes out is the fraction of pairs the model orders correctly — the Mann-Whitney U statistic, rescaled. Ties contribute exactly one half, and using average ranks builds that half-credit in with no special case.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Discrimination from scratch</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-discrimination.html#is-it-right-two-checks",
+    "href": "chapters/04-discrimination.html#is-it-right-two-checks",
+    "title": "4  Discrimination from scratch",
+    "section": "4.2 Is it right? Two checks",
+    "text": "4.2 Is it right? Two checks\nA one-line estimator is easy to get subtly wrong, so we never take it on faith. First, against a completely different code path — wilcox.test, which computes the same U statistic through R’s own rank machinery:\n\nw &lt;- wilcox.test(score ~ factor(label), data = df, exact = FALSE)\nu_ref &lt;- unname(w$statistic) / (sum(df$label == 0) * sum(df$label == 1))\nc(ours = auroc(df$label, df$score), wilcox = 1 - u_ref)\n\n     ours    wilcox \n0.8674829 0.8674829 \n\n\nIdentical to machine precision. That pins the implementation. But a numerically perfect estimator of the wrong quantity is still wrong, so the second check is against the truth the simulator planted — the analytic \\(\\Phi(d/\\sqrt{2})\\) from the previous chapter:\n\n\n\n\n\n\nGroup\nTrue AUROC\nEstimate\nError\n\n\n\n\nI-II\nI-II\n0.892\n0.897\n0.005\n\n\nIII-IV\nIII-IV\n0.847\n0.855\n0.007\n\n\nV-VI\nV-VI\n0.714\n0.655\n-0.059\n\n\n\n\n\nClose everywhere, and closest where the sample is largest — exactly the behaviour a consistent estimator should show. The estimate in V-VI is 0.655 against a truth of 0.714: an error of -0.059 on 160 patients. Whether that gap is alarming or just sampling noise is not a question the point estimate can answer, and it is the subject of the next chapter.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Discrimination from scratch</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/04-discrimination.html#what-discrimination-cannot-see",
+    "href": "chapters/04-discrimination.html#what-discrimination-cannot-see",
+    "title": "4  Discrimination from scratch",
+    "section": "4.3 What discrimination cannot see",
+    "text": "4.3 What discrimination cannot see\nBecause it is built from ranks, the AUROC is invariant to any strictly increasing transformation of the score. Running it on the raw latent value and on the squeezed probability gives the same answer to the last digit:\n\nc(on_probability = auroc(df$label, df$score),\n  on_latent      = auroc(df$label, df$latent))\n\non_probability      on_latent \n     0.8674829      0.8674829 \n\n\nThis is a feature and a warning at once. A feature, because it means a badly scaled or miscalibrated model can still discriminate perfectly, and ranking is the one property recalibration cannot destroy. A warning, because it means the AUROC is structurally blind to whether the probabilities mean anything at all. A model can post an AUROC of 0.87 and still be uninterpretable and unsafe at any given threshold.\nAUROC sees the order and nothing else. To find out whether the numbers themselves can be trusted — and whether the 0.655 in V-VI is real — we need to put a confidence interval on it, and then a second question entirely.",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Discrimination from scratch</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/05-uncertainty.html",
+    "href": "chapters/05-uncertainty.html",
+    "title": "5  Uncertainty is the finding",
+    "section": "",
+    "text": "5.1 The stratified bootstrap\nChapter 4 produced an estimate of 0.655 in the smallest stratum against a truth of 0.714. The question this chapter answers is whether that discrepancy was detectable — and, more usefully, whether the study could have detected anything at all.\nResample with replacement, recompute, repeat, take percentiles. The only subtlety worth caring about is that resampling is done within outcome class:\nboot_ci\n\nfunction (label, score, fn, n_boot = 2000L, alpha = 0.05, seed = 1L, \n    ...) \n{\n    point &lt;- fn(label, score, ...)\n    ix1 &lt;- which(label == 1L)\n    ix0 &lt;- which(label == 0L)\n    if (length(ix1) &lt; 2L || length(ix0) &lt; 2L) {\n        return(c(estimate = point, lower = NA_real_, upper = NA_real_))\n    }\n    set.seed(seed)\n    stats &lt;- numeric(n_boot)\n    for (b in seq_len(n_boot)) {\n        ix &lt;- c(sample(ix1, replace = TRUE), sample(ix0, replace = TRUE))\n        stats[b] &lt;- fn(label[ix], score[ix], ...)\n    }\n    stats &lt;- stats[is.finite(stats)]\n    q &lt;- quantile(stats, c(alpha/2, 1 - alpha/2), names = FALSE)\n    c(estimate = point, lower = q[1], upper = q[2])\n}\n&lt;bytecode: 0x114955eb0&gt;\nResampling rows without regard to outcome regularly produces, in a stratum of 39 events, replicates containing no events at all. The metric is then undefined, those replicates get quietly dropped, and the interval becomes a statement about which replicates happened to survive. Stratifying fixes it.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Uncertainty is the finding</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/05-uncertainty.html#what-the-intervals-look-like",
+    "href": "chapters/05-uncertainty.html#what-the-intervals-look-like",
+    "title": "5  Uncertainty is the finding",
+    "section": "5.2 What the intervals look like",
+    "text": "5.2 What the intervals look like\n\n\n\n\n\nGroup\nn\nEvents\nTrue\nEstimate\nLower\nUpper\nWidth\n\n\n\n\noverall\n2860\n597\nNA\n0.867\n0.852\n0.883\n0.031\n\n\nI-II\n1800\n377\n0.892\n0.897\n0.878\n0.913\n0.035\n\n\nIII-IV\n900\n181\n0.847\n0.855\n0.824\n0.883\n0.058\n\n\nV-VI\n160\n39\n0.714\n0.655\n0.554\n0.750\n0.196\n\n\n\n\n\n\n\n\n\n\nSubgroup AUROC with 95% bootstrap intervals. Crosses mark the planted truth.\n\n\n\n\nThe interval in V-VI is 0.196 wide — six times the pooled interval. It spans from “barely better than chance” to “clinically respectable”. Reported as “AUROC 0.66 in Fitzpatrick V–VI”, which is how it would appear in a table, that estimate conveys a precision it does not have.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Uncertainty is the finding</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/05-uncertainty.html#the-gap-you-cannot-see-is-the-moderate-one",
+    "href": "chapters/05-uncertainty.html#the-gap-you-cannot-see-is-the-moderate-one",
+    "title": "5  Uncertainty is the finding",
+    "section": "5.3 The gap you cannot see is the moderate one",
+    "text": "5.3 The gap you cannot see is the moderate one\nThe natural conclusion is that the smallest group is the problem. The more useful conclusion is about the middle row. How many events would each comparison need?\n\nbase &lt;- tt$true_auroc[tt$group == \"I-II\"]\ndata.frame(\n  group        = c(\"III-IV\", \"V-VI\"),\n  true_gap     = round(base - tt$true_auroc[match(c(\"III-IV\",\"V-VI\"), tt$group)], 3),\n  events_need  = sapply(c(\"III-IV\",\"V-VI\"), function(g)\n                   n_events_for_gap(base, tt$true_auroc[tt$group == g])),\n  events_have  = rep$events[match(c(\"III-IV\",\"V-VI\"), rep$group)]\n)\n\n        group true_gap events_need events_have\nIII-IV III-IV    0.045         445         181\nV-VI     V-VI    0.178          40          39\n\n\nThe dramatic gap in V-VI is, just barely, detectable: 39 events against roughly 40 required. The moderate 0.045 gap in III-IV needs about 445 events per group and the data contain 181.\nSo the real gap in III-IV will be found “not statistically significant”, and reported as reassurance. This is the failure mode that matters, because moderate gaps are the common ones, and the study is systematically blind to exactly the range of effects most likely to exist.\n\n\n\n\n\n\nWarning“No significant difference between subgroups” is not a finding\n\n\n\nIt is the expected result of an underpowered comparison, and subgroup comparisons are nearly always underpowered. The honest report states the smallest gap the analysis could have detected, then says whether it detected it. Absence of evidence, as usual, is doing no work here.",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Uncertainty is the finding</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/05-uncertainty.html#the-bootstrap-is-not-free-either",
+    "href": "chapters/05-uncertainty.html#the-bootstrap-is-not-free-either",
+    "title": "5  Uncertainty is the finding",
+    "section": "5.4 The bootstrap is not free either",
+    "text": "5.4 The bootstrap is not free either\nThe intervals above are percentile intervals, which are known to undercover in small samples (1). Rather than note this and move on, measure it — simulate 200 fresh datasets and count how often the nominal 95% interval actually contains the truth:\n\ncovered &lt;- 0; n_rep &lt;- 200\ntruth &lt;- true_auroc(GROUPS[[\"V-VI\"]]$d)\nfor (r in seq_len(n_rep)) {\n  set.seed(10000 + r)\n  y &lt;- rbinom(160, 1, PREVALENCE)\n  s &lt;- plogis(rnorm(160, mean = y * GROUPS[[\"V-VI\"]]$d, sd = 1))\n  ci &lt;- boot_ci(y, s, auroc, n_boot = 400L, seed = r)\n  if (!is.na(ci[[\"lower\"]]) && truth &gt;= ci[[\"lower\"]] && truth &lt;= ci[[\"upper\"]])\n    covered &lt;- covered + 1\n}\ncovered / n_rep\n\n[1] 0.895\n\n\n89.5%, not 95%. The intervals in this chapter are, if anything, too narrow — which strengthens the argument rather than weakening it. BCa intervals or the analytic Hanley–McNeil variance (2) would be the next step.\n\n\n\n\n\n\n1. Bradley Efron. Better bootstrap confidence intervals. Journal of the American Statistical Association. 1987;82(397):171–85. doi:10.1080/01621459.1987.10478410\n\n\n2. James A. Hanley, Barbara J. McNeil. The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology. 1982;143(1):29–36. doi:10.1148/radiology.143.1.7063747",
+    "crumbs": [
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Uncertainty is the finding</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/06-calibration.html",
+    "href": "chapters/06-calibration.html",
+    "title": "6  Calibration, and a metric that lies",
+    "section": "",
+    "text": "6.1 Two ways to measure it\nChapter 4 established that AUROC cannot see the numbers, only their order. This chapter asks the question it cannot answer: when the model says 0.8, does the event happen 80% of the time?\nThe calibration slope regresses the outcome on the logit of the predicted probability. Perfect calibration gives slope 1, intercept 0. Slope below 1 means predictions are too extreme; above 1, too conservative.\ncalibration\n\nfunction (label, score, eps = 1e-06) \n{\n    s &lt;- pmin(pmax(score, eps), 1 - eps)\n    fit &lt;- glm(label ~ qlogis(s), family = binomial())\n    c(intercept = unname(coef(fit)[1]), slope = unname(coef(fit)[2]))\n}\n&lt;bytecode: 0x11f3d4ef0&gt;\nExpected calibration error bins the predictions and averages the absolute gap between predicted and observed rates within each bin. It is the metric most commonly reported in the machine-learning literature.\nece\n\nfunction (label, score, n_bins = 10L) \n{\n    bins &lt;- cut(score, breaks = seq(0, 1, length.out = n_bins + \n        1L), include.lowest = TRUE)\n    parts &lt;- tapply(seq_along(label), bins, function(ix) {\n        if (length(ix) == 0L) \n            return(0)\n        (length(ix)/length(label)) * abs(mean(label[ix]) - mean(score[ix]))\n    })\n    sum(unlist(parts), na.rm = TRUE)\n}\n&lt;bytecode: 0x11fcbca60&gt;\nBoth are reasonable. On this data they disagree completely.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Calibration, and a metric that lies</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/06-calibration.html#the-disagreement",
+    "href": "chapters/06-calibration.html#the-disagreement",
+    "title": "6  Calibration, and a metric that lies",
+    "section": "6.2 The disagreement",
+    "text": "6.2 The disagreement\n\n\n\n\n\nGroup\nCalibration slope\nECE\nBrier\nAUROC\n\n\n\n\noverall\n1.595\n0.351\n0.246\n0.867\n\n\nI-II\n1.849\n0.355\n0.241\n0.897\n\n\nIII-IV\n1.501\n0.356\n0.251\n0.855\n\n\nV-VI\n0.502\n0.293\n0.265\n0.655\n\n\n\n\n\nThe slope says V-VI is badly miscalibrated — 0.50 against 1.85 in I-II. These are opposite failures: predictions too extreme in one group, too conservative in the other. Pooled, they average to 1.60, a number describing no one in the dataset.\nECE says all three groups are the same, to within 0.06.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Calibration, and a metric that lies</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/06-calibration.html#why-ece-misses-it",
+    "href": "chapters/06-calibration.html#why-ece-misses-it",
+    "title": "6  Calibration, and a metric that lies",
+    "section": "6.3 Why ECE misses it",
+    "text": "6.3 Why ECE misses it\nECE takes an absolute value inside each bin. Systematic over-prediction in one part of the score range and under-prediction in another therefore contribute in the same direction rather than revealing that the whole relationship is tilted. It measures how far off predictions are, not in which direction, systematically.\nThe slope, being a regression coefficient, sees the tilt directly.\n\n\n\n\n\nObserved event rate against predicted probability, by stratum. The diagonal is perfect calibration.\n\n\n\n\nThe V-VI line is visibly flatter than the diagonal: as the model’s confidence rises, the observed rate barely follows. That is a slope of 0.5, drawn.",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Calibration, and a metric that lies</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/06-calibration.html#why-this-matters-more-than-discrimination",
+    "href": "chapters/06-calibration.html#why-this-matters-more-than-discrimination",
+    "title": "6  Calibration, and a metric that lies",
+    "section": "6.4 Why this matters more than discrimination",
+    "text": "6.4 Why this matters more than discrimination\nIf the model feeds a ranked worklist, miscalibration is survivable — order is preserved. If it feeds a threshold, it is not. A referral rule of “investigate if p &gt; 0.7” assumes 0.7 means the same thing in every patient. Here it does not, and the group where it means least is the group already least likely to have been examined by a specialist.\nThis is the standard signature of a transported model, and it is why calibration is the first thing to break and the last thing to be reported (1). TRIPOD+AI now asks for calibration to be reported explicitly, with a plot, for exactly this reason (2).\n\n\n\n\n\n\nNoteReport both, and the plot\n\n\n\nThe slope and intercept catch systematic tilt; ECE catches local wobble; the plot catches things neither summarises. Anyone reporting a single calibration number is choosing which failures they are willing to miss.\n\n\n\n\n\n\n\n\n1. Ben Van Calster, David J. McLernon, Maarten van Smeden, Laure Wynants, Ewout W. Steyerberg. Calibration: The Achilles heel of predictive analytics. BMC Medicine. 2019;17:230. doi:10.1186/s12916-019-1466-7\n\n\n2. Gary S. Collins, Karel G. M. Moons, Paula Dhiman, Richard D. Riley, Andrew L. Beam, Ben Van Calster, others. TRIPOD+AI statement: Updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ. 2024;385:e078378. doi:10.1136/bmj-2023-078378",
+    "crumbs": [
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Calibration, and a metric that lies</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-thresholds.html",
+    "href": "chapters/07-thresholds.html",
+    "title": "7  Thresholds, and the cost of one rule",
+    "section": "",
+    "text": "7.1 One threshold, measured two ways\nDiscrimination and calibration are properties of the scores. A decision is not: it needs a threshold, a line past which the model says act. The moment you draw that line, a new question opens — is one line right for everyone? — and the honest answer, whenever the subgroups differ in separability, is no.\nStart with the naive policy: the same cutoff, 0.5, for every group. The equalised-odds view reports the true-positive and false-positive rates each group actually gets under that shared rule (1).\nequalised_odds\n\nfunction (df, group_col = \"group\", threshold = 0.5) \n{\n    gs &lt;- sort(unique(df[[group_col]]))\n    tpr &lt;- sapply(gs, function(g) {\n        s &lt;- df[df[[group_col]] == g, ]\n        sensitivity(s$label, s$score, threshold)\n    })\n    fpr &lt;- sapply(gs, function(g) {\n        s &lt;- df[df[[group_col]] == g, ]\n        1 - specificity(s$label, s$score, threshold)\n    })\n    list(tpr = tpr, fpr = fpr, tpr_gap = max(tpr) - min(tpr), \n        fpr_gap = max(fpr) - min(fpr), worst = names(which.min(tpr)))\n}\n&lt;bytecode: 0x130bf86a0&gt;\nGroup\nTPR\nFPR\n\n\n\n\nI-II\nI-II\n0.960\n0.506\n\n\nIII-IV\nIII-IV\n0.923\n0.497\n\n\nV-VI\nV-VI\n0.744\n0.521\nRead the two columns separately, because they tell opposite stories. The false-positive rates are close: the non-event scores are drawn from the same distribution in every stratum, so a fixed cutoff catches roughly the same fraction of them everywhere. It is the true-positive rate that collapses — a gap of 0.217 between the best and worst group. A shared threshold does not share the harm evenly; it hands the worst-separated group a much lower chance of being caught. That is the disparate impact hiding inside a group-blind rule.",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Thresholds, and the cost of one rule</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-thresholds.html#fixing-the-clinical-standard-instead",
+    "href": "chapters/07-thresholds.html#fixing-the-clinical-standard-instead",
+    "title": "7  Thresholds, and the cost of one rule",
+    "section": "7.2 Fixing the clinical standard instead",
+    "text": "7.2 Fixing the clinical standard instead\nSo flip it. Fix the thing a clinician actually cares about — “detect 90% of events” — and let each group have whatever threshold reaches it. Now the sensitivity is equal by construction, and the cost surfaces somewhere else.\n\ngroup_thresholds\n\nfunction (df, group_col = \"group\", target = 0.9) \n{\n    gs &lt;- sort(unique(df[[group_col]]))\n    do.call(rbind, lapply(gs, function(g) {\n        sub &lt;- df[df[[group_col]] == g, ]\n        thr &lt;- unname(quantile(sub$score[sub$label == 1L], 1 - \n            target))\n        data.frame(group = g, threshold = thr, sensitivity = sensitivity(sub$label, \n            sub$score, thr), specificity = specificity(sub$label, \n            sub$score, thr), row.names = NULL)\n    }))\n}\n&lt;bytecode: 0x1267b6c20&gt;\n\n\n\n\n\n\n\nGroup\nThreshold\nSensitivity\nSpecificity\n\n\n\n\nI-II\n0.617\n0.899\n0.699\n\n\nIII-IV\n0.564\n0.901\n0.574\n\n\nV-VI\n0.256\n0.897\n0.132\n\n\n\n\n\nEvery group now catches 90% of events. But look at what that costs in specificity. In I-II it is 0.699 — you wave through most true negatives. In V-VI it is 0.132: to reach the same sensitivity on a flatter ROC curve, the threshold slides down into the non-event mass and specificity falls off a cliff.\nPut in the terms a service feels: at the same clinical standard, the best-served group refers about 30% of its negatives for follow-up, and the worst-served group refers about 87% of its negatives. Same model, same rule, wildly different burden — a service-design problem, not a rounding error.",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Thresholds, and the cost of one rule</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/07-thresholds.html#the-trade-off-is-forced-not-incidental",
+    "href": "chapters/07-thresholds.html#the-trade-off-is-forced-not-incidental",
+    "title": "7  Thresholds, and the cost of one rule",
+    "section": "7.3 The trade-off is forced, not incidental",
+    "text": "7.3 The trade-off is forced, not incidental\nYou cannot escape by being cleverer with the cutoff. Equalised odds asks for equal TPR and equal FPR at once; when two groups sit on ROC curves of different quality, you can satisfy that only where the curves happen to cross, which is nowhere near a clinically useful operating point. A shared threshold fails on the TPR leg; equalising sensitivity fails on the FPR leg. Every choice absorbs the disparity somewhere.\n\n\n\n\n\nThe two policies, drawn. Left: one threshold gives equal FPR but unequal sensitivity. Right: equal 90% sensitivity gives sharply unequal specificity. Neither is free.\n\n\n\n\nWhich failure to accept — more missed cases in the worst group, or more false alarms there — is a value judgement about who bears the cost of the model’s weaker grip on that group. It is not a judgement a metric can make for you, and it is certainly not one a single shared threshold makes honestly; it just makes it silently.\n\n\n\n\n\n\nImportantA threshold is a policy, not a default\n\n\n\np &gt; 0.5 looks neutral and is not. It encodes equal false-positive rates and unequal sensitivities, and it hides that choice behind a round number. Report the operating point you actually use, the sensitivity and specificity it produces in each subgroup, and who pays for the gap.\n\n\n\n\n\n\n\n\n1. Moritz Hardt, Eric Price, Nathan Srebro. Equality of opportunity in supervised learning. In: Advances in neural information processing systems (NeurIPS). 2016. p. 3315–23.",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Thresholds, and the cost of one rule</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/08-takeaways.html",
+    "href": "chapters/08-takeaways.html",
+    "title": "8  Takeaways",
+    "section": "",
+    "text": "8.1 A checklist for the next paper you read\nEverything in this book came from one modest model evaluated on one simulated dataset, and every apparent problem was already latent in a headline AUROC of 0.87. Pulling that number apart, three times over, is the whole method.\nWhen a model-evaluation table crosses your desk, these are the questions the preceding chapters were designed to make reflexive.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Takeaways</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/08-takeaways.html#a-checklist-for-the-next-paper-you-read",
+    "href": "chapters/08-takeaways.html#a-checklist-for-the-next-paper-you-read",
+    "title": "8  Takeaways",
+    "section": "",
+    "text": "Is the headline number pooled? If so, it is the largest subgroup’s number wearing everyone’s name. Ask for the breakdown (Chapter 1).\nAre subgroup estimates reported with intervals, and do the intervals use events, not rows? A stratum of 5,000 patients with 39 events is a stratum of 39. The interval, not the point, is the finding (Chapters 4–5).\nDoes “no significant difference between subgroups” come with a power statement? Without one it is the expected result of an underpowered test, not evidence of equivalence. The moderate, plausible gap is exactly the one these comparisons are blind to (Chapter 5).\nIs calibration reported at all — and with a slope or plot, not only ECE? A single magnitude metric cannot see a systematic tilt, and cannot see it differing between groups (Chapter 6). TRIPOD+AI now asks for this explicitly (1).\nWhat threshold is used, and what does it cost each group? A shared cutoff is a policy that equalises false positives and unequal-ises sensitivity. Name the operating point and its per-subgroup sensitivity and specificity (Chapter 7).\nCould you reproduce any of it? A seed, the code, and the estimators in the open are the difference between a claim and a result.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Takeaways</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/08-takeaways.html#what-this-book-did-not-do-on-purpose",
+    "href": "chapters/08-takeaways.html#what-this-book-did-not-do-on-purpose",
+    "title": "8  Takeaways",
+    "section": "8.2 What this book did not do, on purpose",
+    "text": "8.2 What this book did not do, on purpose\nThe point of validating on simulated data is to be honest about limits, so here are the ones that matter.\n\nThe bootstrap undercovers. Measured, not assumed: across 200 replicate V-VI datasets, nominal 95% intervals held the truth about 89.5% of the time. The intervals throughout are therefore, if anything, a little too narrow — which only strengthens the argument. BCa or the analytic Hanley–McNeil variance (2,3) is the next step.\nThe world is friendlier than reality. Scores are equal-variance binormal and prevalence is held constant across strata. Both make the estimators’ lives easier; a messier distribution can only widen the gaps shown here, not invent them. Holding prevalence fixed was a choice to isolate separation from base rate, not a claim that real subgroups share a base rate.\nUtility is treated only through the threshold. A full decision-curve or net-benefit analysis (4) would weigh the asymmetric costs of a false alarm against a missed case directly, and is the natural sequel to Chapter 7.\nThe point estimates are illustrative. The deliverable is the behaviour of the estimators — where they recover truth and where they quietly fail — not a claim that any real model has an AUROC of 0.66 in any real group.",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Takeaways</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/08-takeaways.html#the-one-habit-worth-keeping",
+    "href": "chapters/08-takeaways.html#the-one-habit-worth-keeping",
+    "title": "8  Takeaways",
+    "section": "8.3 The one habit worth keeping",
+    "text": "8.3 The one habit worth keeping\nWrite the estimator down. Every metric in this book is a handful of readable lines checked against a reference it did not come from — wilcox.test, glm, or an answer known in closed form. That is not nostalgia for base R. It is that an evaluation is an argument, and an argument you cannot see all the way through is one you cannot defend. The fastest way to believe any of it is still to open R/simulate.R, break the world on purpose, and watch the numbers tell on you.\n\n\n\n\n\n\n1. Gary S. Collins, Karel G. M. Moons, Paula Dhiman, Richard D. Riley, Andrew L. Beam, Ben Van Calster, others. TRIPOD+AI statement: Updated guidance for reporting clinical prediction models that use regression or machine learning methods. BMJ. 2024;385:e078378. doi:10.1136/bmj-2023-078378\n\n\n2. James A. Hanley, Barbara J. McNeil. The meaning and use of the area under a receiver operating characteristic (ROC) curve. Radiology. 1982;143(1):29–36. doi:10.1148/radiology.143.1.7063747\n\n\n3. Bradley Efron. Better bootstrap confidence intervals. Journal of the American Statistical Association. 1987;82(397):171–85. doi:10.1080/01621459.1987.10478410\n\n\n4. Andrew J. Vickers, Elena B. Elkin. Decision curve analysis: A novel method for evaluating prediction models. Medical Decision Making. 2006;26(6):565–74. doi:10.1177/0272989X06295361",
+    "crumbs": [
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Takeaways</span>"
+    ]
+  }
+]
