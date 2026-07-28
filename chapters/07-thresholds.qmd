@@ -1,0 +1,117 @@
+# Thresholds, and the cost of one rule
+
+```{r}
+#| include: false
+source("../R/simulate.R"); source("../R/metrics.R"); source("../R/theme_eval.R")
+df  <- simulate_predictions()
+eo  <- equalised_odds(df, threshold = 0.5)
+gt  <- group_thresholds(df, target = 0.90)
+```
+
+Discrimination and calibration are properties of the scores. A decision is not:
+it needs a threshold, a line past which the model says *act*. The moment you
+draw that line, a new question opens — is one line right for everyone? — and
+the honest answer, whenever the subgroups differ in separability, is no.
+
+## One threshold, measured two ways
+
+Start with the naive policy: the same cutoff, 0.5, for every group. The
+equalised-odds view reports the true-positive and false-positive rates each
+group actually gets under that shared rule [@hardt2016].
+
+```{r}
+equalised_odds
+```
+
+```{r}
+#| echo: false
+knitr::kable(
+  data.frame(Group = names(eo$tpr),
+             TPR = round(eo$tpr, 3),
+             FPR = round(eo$fpr, 3)),
+  align = "lrr"
+)
+```
+
+Read the two columns separately, because they tell opposite stories. The
+false-positive rates are close: the non-event scores are drawn from the same
+distribution in every stratum, so a fixed cutoff catches roughly the same
+fraction of them everywhere. It is the **true-positive** rate that collapses —
+a gap of `r round(eo$tpr_gap, 3)` between the best and worst group. A shared threshold does not
+share the harm evenly; it hands the worst-separated group a much lower chance
+of being caught. That is the disparate impact hiding inside a group-blind rule.
+
+## Fixing the clinical standard instead
+
+So flip it. Fix the thing a clinician actually cares about — "detect 90% of
+events" — and let each group have whatever threshold reaches it. Now the
+sensitivity is equal by construction, and the cost surfaces somewhere else.
+
+```{r}
+group_thresholds
+```
+
+```{r}
+#| echo: false
+knitr::kable(gt, digits = 3,
+             col.names = c("Group", "Threshold", "Sensitivity", "Specificity"))
+```
+
+Every group now catches 90% of events. But look at what that costs in
+specificity. In `I-II` it is `r round(gt$specificity[gt$group == "I-II"], 3)` — you wave through most true
+negatives. In `V-VI` it is `r round(gt$specificity[gt$group == "V-VI"], 3)`: to reach the same
+sensitivity on a flatter ROC curve, the threshold slides down into the
+non-event mass and specificity falls off a cliff.
+
+Put in the terms a service feels: at the same clinical standard, the
+best-served group refers about **`r round((1 - gt$specificity[gt$group == "I-II"]) * 100)`% of its
+negatives** for follow-up, and the worst-served group refers about
+**`r round((1 - gt$specificity[gt$group == "V-VI"]) * 100)`%** of its negatives. Same model,
+same rule, wildly different burden — a service-design problem, not a rounding
+error.
+
+## The trade-off is forced, not incidental
+
+You cannot escape by being cleverer with the cutoff. Equalised odds asks for
+equal TPR *and* equal FPR at once; when two groups sit on ROC curves of
+different quality, you can satisfy that only where the curves happen to cross,
+which is nowhere near a clinically useful operating point. A shared threshold
+fails on the TPR leg; equalising sensitivity fails on the FPR leg. Every choice
+absorbs the disparity somewhere.
+
+```{r}
+#| echo: false
+#| fig-cap: "The two policies, drawn. Left: one threshold gives equal FPR but unequal sensitivity. Right: equal 90% sensitivity gives sharply unequal specificity. Neither is free."
+library(ggplot2)
+d1 <- data.frame(group = names(eo$tpr), value = eo$tpr, panel = "Shared 0.5 threshold\n(sensitivity diverges)")
+d2 <- data.frame(group = gt$group, value = gt$specificity, panel = "Equal 90% sensitivity\n(specificity diverges)")
+d1$metric <- "Sensitivity"; d2$metric <- "Specificity"
+dd <- rbind(d1, d2)
+ggplot(dd, aes(x = value, y = factor(group, levels = c("V-VI","III-IV","I-II")),
+               colour = group)) +
+  geom_segment(aes(x = 0, xend = value,
+                   yend = factor(group, levels = c("V-VI","III-IV","I-II"))),
+               colour = EVAL_GREY) +
+  geom_point(size = 3.6) +
+  facet_wrap(~ panel) +
+  scale_colour_manual(values = group_cols, guide = "none") +
+  xlim(0, 1) +
+  labs(title = "You choose which disparity to absorb",
+       x = NULL, y = NULL) +
+  theme_eval()
+```
+
+Which failure to accept — more missed cases in the worst group, or more false
+alarms there — is a value judgement about who bears the cost of the model's
+weaker grip on that group. It is not a judgement a metric can make for you, and
+it is certainly not one a single shared threshold makes *honestly*; it just
+makes it silently.
+
+::: {.callout-important}
+## A threshold is a policy, not a default
+
+`p > 0.5` looks neutral and is not. It encodes equal false-positive rates and
+unequal sensitivities, and it hides that choice behind a round number. Report
+the operating point you actually use, the sensitivity and specificity it
+produces *in each subgroup*, and who pays for the gap.
+:::
