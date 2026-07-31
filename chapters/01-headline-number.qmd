@@ -14,15 +14,15 @@ is the one number every such model is eventually reduced to:
 auroc(df$label, df$score)
 ```
 
-An AUROC of about **0.87**. That is a good model — comfortably better than a
-coin, the kind of number that clears a reviewer, anchors an abstract, and gets
+An AUROC of about **0.87**. That is a good model, comfortably better than a
+coin: the kind of number that clears a reviewer, anchors an abstract, and gets
 carried into a slide deck as *the* result. If the story stopped here, it would
 be a reassuring one.
 
 ## The average is hiding its variance
 
 The patients in this dataset are not interchangeable. They fall into three
-strata of very different size — think of Fitzpatrick skin types on a
+strata of very different size. Think of Fitzpatrick skin types on a
 dermatology model, where the darkest-skinned group is routinely under 5% of the
 training images. Ask the same question inside each stratum:
 
@@ -38,7 +38,7 @@ knitr::kable(
 )
 ```
 
-The single number was 0.87. Inside the smallest group it is **`r round(by_group["V-VI"], 2)`** — a different
+The single number was 0.87. Inside the smallest group it is **`r round(by_group["V-VI"], 2)`**: a different
 model, in effect, for the patients who were least present when it was built.
 The pooled figure is not wrong; it is dominated. The largest stratum sets the
 average, and the average then speaks confidently on behalf of a group it barely
@@ -68,8 +68,8 @@ ggplot(d, aes(x = auroc, y = reorder(group, auroc))) +
 Splitting the AUROC by subgroup is the first move, and the rest of this book is
 the argument that it is not nearly enough. A subgroup estimate is still just an
 estimate, and in a stratum of a few dozen events it can be wildly imprecise
-without looking it (Chapter 5). Discrimination — can the model *rank* patients
-— is only one of three questions, and the other two, whether its probabilities
+without looking it (Chapter 5). Discrimination (can the model *rank* patients)
+is only one of three questions, and the other two, whether its probabilities
 are *calibrated* (Chapter 6) and whether a single decision *threshold* serves
 every group (Chapter 7), are where transported models usually fail.
 

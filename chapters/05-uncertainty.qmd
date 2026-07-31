@@ -10,7 +10,7 @@ tt  <- truth_table()
 
 Chapter 4 produced an estimate of 0.655 in the smallest stratum against a
 truth of 0.714. The question this chapter answers is whether that discrepancy
-was detectable — and, more usefully, whether the study could have detected
+was detectable and, more usefully, whether the study could have detected
 anything at all.
 
 ## The stratified bootstrap
@@ -58,7 +58,7 @@ ggplot(d, aes(y = group)) +
   theme_eval()
 ```
 
-The interval in `V-VI` is **0.196 wide** — six times the pooled interval. It
+The interval in `V-VI` is **0.196 wide**, six times the pooled interval. It
 spans from "barely better than chance" to "clinically respectable". Reported
 as "AUROC 0.66 in Fitzpatrick V–VI", which is how it would appear in a table,
 that estimate conveys a precision it does not have.
@@ -101,9 +101,8 @@ it. Absence of evidence, as usual, is doing no work here.
 ## The bootstrap is not free either
 
 The intervals above are percentile intervals, which are known to undercover
-in small samples [@efron1987]. Rather than note this and move on, measure it
-— simulate 200 fresh datasets and count how often the nominal 95% interval
-actually contains the truth:
+in small samples [@efron1987]. So measure it. Simulate 200 fresh datasets and
+count how often the nominal 95% interval actually contains the truth:
 
 ```{r}
 #| cache: true
@@ -121,6 +120,5 @@ covered / n_rep
 ```
 
 **89.5%, not 95%.** The intervals in this chapter are, if anything, too
-narrow — which strengthens the argument rather than weakening it. BCa
-intervals or the analytic Hanley–McNeil variance [@hanley1982] would be the
-next step.
+narrow, which strengthens the argument. BCa intervals or the analytic
+Hanley–McNeil variance [@hanley1982] would be the next step.

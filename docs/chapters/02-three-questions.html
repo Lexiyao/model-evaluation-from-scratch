@@ -230,9 +230,9 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#discrimination-can-it-rank" id="toc-discrimination-can-it-rank" class="nav-link active" data-scroll-target="#discrimination-can-it-rank"><span class="header-section-number">2.1</span> 1. Discrimination — can it rank?</a></li>
-  <li><a href="#calibration-do-the-numbers-mean-what-they-say" id="toc-calibration-do-the-numbers-mean-what-they-say" class="nav-link" data-scroll-target="#calibration-do-the-numbers-mean-what-they-say"><span class="header-section-number">2.2</span> 2. Calibration — do the numbers mean what they say?</a></li>
-  <li><a href="#utility-is-it-worth-using-here" id="toc-utility-is-it-worth-using-here" class="nav-link" data-scroll-target="#utility-is-it-worth-using-here"><span class="header-section-number">2.3</span> 3. Utility — is it worth using here?</a></li>
+  <li><a href="#discrimination-can-it-rank" id="toc-discrimination-can-it-rank" class="nav-link active" data-scroll-target="#discrimination-can-it-rank"><span class="header-section-number">2.1</span> 1. Discrimination: can it rank?</a></li>
+  <li><a href="#calibration-do-the-numbers-mean-what-they-say" id="toc-calibration-do-the-numbers-mean-what-they-say" class="nav-link" data-scroll-target="#calibration-do-the-numbers-mean-what-they-say"><span class="header-section-number">2.2</span> 2. Calibration: do the numbers mean what they say?</a></li>
+  <li><a href="#utility-is-it-worth-using-here" id="toc-utility-is-it-worth-using-here" class="nav-link" data-scroll-target="#utility-is-it-worth-using-here"><span class="header-section-number">2.3</span> 3. Utility: is it worth using here?</a></li>
   <li><a href="#why-the-separation-matters" id="toc-why-the-separation-matters" class="nav-link" data-scroll-target="#why-the-separation-matters"><span class="header-section-number">2.4</span> Why the separation matters</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/Lexiyao/model-evaluation-from-scratch/blob/main/chapters/02-three-questions.qmd" class="toc-action"><i class="bi bi-github"></i>View source</a></li><li><a href="https://github.com/Lexiyao/model-evaluation-from-scratch/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -261,23 +261,23 @@ div.csl-indent {
 
 <p>A model that outputs a probability is asked to do three different jobs, and it can do any one of them well while failing the others. “Is it a good model?” is really three questions wearing one coat <span class="citation" data-cites="steyerberg2010">(<a href="#ref-steyerberg2010" role="doc-biblioref">1</a>)</span>.</p>
 <section id="discrimination-can-it-rank" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="discrimination-can-it-rank"><span class="header-section-number">2.1</span> 1. Discrimination — can it rank?</h2>
+<h2 data-number="2.1" class="anchored" data-anchor-id="discrimination-can-it-rank"><span class="header-section-number">2.1</span> 1. Discrimination: can it rank?</h2>
 <p>Given an event and a non-event, does the model score the event higher? This is ranking, and nothing else. It asks whether the model puts patients in the right <em>order</em>, and it is completely indifferent to what the numbers on that order actually are. A model whose every probability is divided by ten discriminates exactly as well as before.</p>
 <p>AUROC measures this, and only this. Chapter 4 builds it. Its blind spot is everything to do with the numbers themselves, which is the whole of the next question.</p>
 </section>
 <section id="calibration-do-the-numbers-mean-what-they-say" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="calibration-do-the-numbers-mean-what-they-say"><span class="header-section-number">2.2</span> 2. Calibration — do the numbers mean what they say?</h2>
-<p>When the model says 0.8, does the event happen about 80% of the time? A model can rank perfectly and still be badly calibrated — confident when it should be cautious, or the reverse — and you cannot tell from the AUROC, because ranking survives any monotone rescaling of the score.</p>
+<h2 data-number="2.2" class="anchored" data-anchor-id="calibration-do-the-numbers-mean-what-they-say"><span class="header-section-number">2.2</span> 2. Calibration: do the numbers mean what they say?</h2>
+<p>When the model says 0.8, does the event happen about 80% of the time? A model can rank perfectly and still be badly calibrated (confident when it should be cautious, or the reverse), and you cannot tell from the AUROC, because ranking survives any monotone rescaling of the score.</p>
 <p>Calibration is the question that matters the moment a probability is read as a probability: fed to a threshold, shown to a clinician, multiplied into an expected cost. It is also, reliably, the first thing to break when a model trained in one population meets another, and the last thing anyone reports <span class="citation" data-cites="vancalster2019">(<a href="#ref-vancalster2019" role="doc-biblioref">2</a>)</span>. Chapter 6 builds two ways to measure it, and shows them disagreeing.</p>
 </section>
 <section id="utility-is-it-worth-using-here" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="utility-is-it-worth-using-here"><span class="header-section-number">2.3</span> 3. Utility — is it worth using here?</h2>
-<p>Even a well-ranked, well-calibrated model has to earn its place against the decision it informs. Acting on a prediction has costs — a false alarm is not free, and neither is a missed case — and those costs are not symmetric and not the same in every setting. Decision-analytic tools such as net benefit weigh them explicitly <span class="citation" data-cites="vickers2006">(<a href="#ref-vickers2006" role="doc-biblioref">3</a>)</span>.</p>
-<p>This book concentrates on the first two questions, where most evaluation mistakes are made, and treats utility through its most common proxy: the operating threshold. Chapter 7 shows that a single fixed threshold — “refer if p &gt; 0.7” — is itself a utility judgement, and one that quietly costs different groups very different amounts.</p>
+<h2 data-number="2.3" class="anchored" data-anchor-id="utility-is-it-worth-using-here"><span class="header-section-number">2.3</span> 3. Utility: is it worth using here?</h2>
+<p>Even a well-ranked, well-calibrated model has to earn its place against the decision it informs. Acting on a prediction has costs (a false alarm is not free, and neither is a missed case), and those costs are not symmetric and not the same in every setting. Decision-analytic tools such as net benefit weigh them explicitly <span class="citation" data-cites="vickers2006">(<a href="#ref-vickers2006" role="doc-biblioref">3</a>)</span>.</p>
+<p>This book concentrates on the first two questions, where most evaluation mistakes are made, and treats utility through its most common proxy: the operating threshold. Chapter 7 shows that a single fixed threshold (“refer if p &gt; 0.7”) is itself a utility judgement, and one that quietly costs different groups very different amounts.</p>
 </section>
 <section id="why-the-separation-matters" class="level2" data-number="2.4">
 <h2 data-number="2.4" class="anchored" data-anchor-id="why-the-separation-matters"><span class="header-section-number">2.4</span> Why the separation matters</h2>
-<p>Keeping the three apart is not pedantry; it is what lets you locate a failure.</p>
+<p>Keeping the three apart is what lets you locate a failure.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -798,7 +798,7 @@ div.csl-indent {
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>can do any one of them well while failing the others. "Is it a good model?" is</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>really three questions wearing one coat <span class="co">[</span><span class="ot">@steyerberg2010</span><span class="co">]</span>.</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1. Discrimination — can it rank?</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1. Discrimination: can it rank?</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Given an event and a non-event, does the model score the event higher? This is</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>ranking, and nothing else. It asks whether the model puts patients in the right</span>
@@ -810,11 +810,11 @@ div.csl-indent {
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>everything to do with the numbers themselves, which is the whole of the next</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>question.</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Calibration — do the numbers mean what they say?</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2. Calibration: do the numbers mean what they say?</span></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>When the model says 0.8, does the event happen about 80% of the time? A model</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>can rank perfectly and still be badly calibrated — confident when it should be</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>cautious, or the reverse — and you cannot tell from the AUROC, because ranking</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>can rank perfectly and still be badly calibrated (confident when it should be</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>cautious, or the reverse), and you cannot tell from the AUROC, because ranking</span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>survives any monotone rescaling of the score.</span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>Calibration is the question that matters the moment a probability is read as a</span>
@@ -824,23 +824,23 @@ div.csl-indent {
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">@vancalster2019</span><span class="co">]</span>. Chapter 6 builds two ways to measure it, and shows them</span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>disagreeing.</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Utility — is it worth using here?</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3. Utility: is it worth using here?</span></span>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>Even a well-ranked, well-calibrated model has to earn its place against the</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>decision it informs. Acting on a prediction has costs — a false alarm is not</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>free, and neither is a missed case — and those costs are not symmetric and not</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>decision it informs. Acting on a prediction has costs (a false alarm is not</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>free, and neither is a missed case), and those costs are not symmetric and not</span>
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>the same in every setting. Decision-analytic tools such as net benefit weigh</span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>them explicitly <span class="co">[</span><span class="ot">@vickers2006</span><span class="co">]</span>.</span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>This book concentrates on the first two questions, where most evaluation</span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>mistakes are made, and treats utility through its most common proxy: the</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>operating threshold. Chapter 7 shows that a single fixed threshold — "refer if</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>p &gt; 0.7" — is itself a utility judgement, and one that quietly costs different</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>operating threshold. Chapter 7 shows that a single fixed threshold ("refer if</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>p &gt; 0.7") is itself a utility judgement, and one that quietly costs different</span>
 <span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>groups very different amounts.</span>
 <span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why the separation matters</span></span>
 <span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>Keeping the three apart is not pedantry; it is what lets you locate a failure.</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>Keeping the three apart is what lets you locate a failure.</span>
 <span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> A model can be… <span class="pp">|</span> …while being… <span class="pp">|</span> Symptom <span class="pp">|</span></span>
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|</span></span>

@@ -9,8 +9,8 @@ tt <- truth_table()
 
 To trust a measuring instrument, you calibrate it against something whose
 length you already know. Real evaluation data can never be that reference,
-because with real data the truth — the model's actual discrimination in each
-subgroup — is precisely what you are trying to estimate and never get to see.
+because with real data the truth (the model's actual discrimination in each
+subgroup) is precisely what you are trying to estimate and never get to see.
 So we simulate, and we simulate in a way that hands us the answer up front.
 
 ## A generator with a closed-form truth
@@ -25,8 +25,8 @@ simulate_predictions
 
 The move that makes the whole book possible is this: for two normals of equal
 variance separated by `d`, the probability that a draw from the event
-distribution exceeds a draw from the non-event distribution — which *is* the
-AUROC — has a closed form.
+distribution exceeds a draw from the non-event distribution *is* the AUROC,
+and it has a closed form.
 
 $$
 \text{AUROC} \;=\; P(X_{\text{event}} > X_{\text{non-event}})
@@ -44,7 +44,7 @@ from the right answer.
 
 The separations and sizes are chosen to caricature a common situation: a model
 that is sharp in the group that dominates the data and dull in the group that
-does not, with the small group also being the one where the signal is genuinely
+does not. The small group is also the one where the signal is genuinely
 weaker.
 
 ```{r}
@@ -55,7 +55,7 @@ knitr::kable(tt, digits = 3,
 
 Two things are held fixed on purpose. The prevalence is the same **`r PREVALENCE`**
 in every stratum, so that no performance gap can later be blamed on a
-difference in base rates — the gap will be about separation and sample size,
+difference in base rates. The gap will be about separation and sample size,
 nothing else. And the seed is fixed, so every number in this book is
 reproducible to the digit.
 
@@ -78,7 +78,7 @@ In `I-II` the two distributions barely touch; in `V-VI` they sit almost on top
 of each other. That overlap is the true AUROC of `r round(tt$true_auroc[tt$group == "V-VI"], 3)`, drawn.
 
 The `score` column the rest of the book uses is just this latent value squeezed
-through `plogis()` onto the 0–1 probability scale — a stand-in for a model that
+through `plogis()` onto the 0–1 probability scale: a stand-in for a model that
 is imperfectly calibrated, which becomes the subject of Chapter 6. Everything
 downstream reads only `label` and `score`, exactly as it would for a real
 model's output.

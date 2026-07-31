@@ -272,7 +272,7 @@ div.csl-indent {
     fit &lt;- glm(label ~ qlogis(s), family = binomial())
     c(intercept = unname(coef(fit)[1]), slope = unname(coef(fit)[2]))
 }
-&lt;bytecode: 0x11f3d4ef0&gt;</code></pre>
+&lt;bytecode: 0x113db4988&gt;</code></pre>
 </div>
 </div>
 <p><strong>Expected calibration error</strong> bins the predictions and averages the absolute gap between predicted and observed rates within each bin. It is the metric most commonly reported in the machine-learning literature.</p>
@@ -290,7 +290,7 @@ div.csl-indent {
     })
     sum(unlist(parts), na.rm = TRUE)
 }
-&lt;bytecode: 0x11fcbca60&gt;</code></pre>
+&lt;bytecode: 0x10da89b28&gt;</code></pre>
 </div>
 </div>
 <p>Both are reasonable. On this data they disagree completely.</p>
@@ -342,12 +342,12 @@ div.csl-indent {
 </table>
 </div>
 </div>
-<p>The slope says <code>V-VI</code> is badly miscalibrated — 0.50 against 1.85 in <code>I-II</code>. These are opposite failures: predictions too extreme in one group, too conservative in the other. Pooled, they average to 1.60, a number describing no one in the dataset.</p>
+<p>The slope says <code>V-VI</code> is badly miscalibrated: 0.50 against 1.85 in <code>I-II</code>. These are opposite failures: predictions too extreme in one group, too conservative in the other. Pooled, they average to 1.60, a number describing no one in the dataset.</p>
 <p>ECE says all three groups are the same, to within 0.06.</p>
 </section>
 <section id="why-ece-misses-it" class="level2" data-number="6.3">
 <h2 data-number="6.3" class="anchored" data-anchor-id="why-ece-misses-it"><span class="header-section-number">6.3</span> Why ECE misses it</h2>
-<p>ECE takes an absolute value inside each bin. Systematic over-prediction in one part of the score range and under-prediction in another therefore contribute in the same direction rather than revealing that the whole relationship is tilted. It measures <em>how far off</em> predictions are, not <em>in which direction, systematically</em>.</p>
+<p>ECE takes an absolute value inside each bin. Systematic over-prediction in one part of the score range and under-prediction in another therefore contribute in the same direction, and the tilt in the whole relationship never shows up. It measures <em>how far off</em> predictions are, not <em>in which direction, systematically</em>.</p>
 <p>The slope, being a regression coefficient, sees the tilt directly.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -363,7 +363,7 @@ div.csl-indent {
 </section>
 <section id="why-this-matters-more-than-discrimination" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="why-this-matters-more-than-discrimination"><span class="header-section-number">6.4</span> Why this matters more than discrimination</h2>
-<p>If the model feeds a ranked worklist, miscalibration is survivable — order is preserved. If it feeds a <strong>threshold</strong>, it is not. A referral rule of “investigate if p &gt; 0.7” assumes 0.7 means the same thing in every patient. Here it does not, and the group where it means least is the group already least likely to have been examined by a specialist.</p>
+<p>If the model feeds a ranked worklist, miscalibration is survivable, because order is preserved. If it feeds a <strong>threshold</strong>, it is not. A referral rule of “investigate if p &gt; 0.7” assumes 0.7 means the same thing in every patient. Here it does not, and the group where it means least is the group already least likely to have been examined by a specialist.</p>
 <p>This is the standard signature of a transported model, and it is why calibration is the first thing to break and the last thing to be reported <span class="citation" data-cites="vancalster2019">(<a href="#ref-vancalster2019" role="doc-biblioref">1</a>)</span>. TRIPOD+AI now asks for calibration to be reported explicitly, with a plot, for exactly this reason <span class="citation" data-cites="collins2024">(<a href="#ref-collins2024" role="doc-biblioref">2</a>)</span>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -897,7 +897,7 @@ div.csl-indent {
 <span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Group"</span>,<span class="st">"Calibration slope"</span>,<span class="st">"ECE"</span>,<span class="st">"Brier"</span>,<span class="st">"AUROC"</span>))</span>
 <span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>The slope says <span class="in">`V-VI`</span> is badly miscalibrated — 0.50 against 1.85 in <span class="in">`I-II`</span>.</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>The slope says <span class="in">`V-VI`</span> is badly miscalibrated: 0.50 against 1.85 in <span class="in">`I-II`</span>.</span>
 <span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>These are opposite failures: predictions too extreme in one group, too</span>
 <span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>conservative in the other. Pooled, they average to 1.60, a number describing</span>
 <span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>no one in the dataset.</span>
@@ -908,8 +908,8 @@ div.csl-indent {
 <span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>ECE takes an absolute value inside each bin. Systematic over-prediction in</span>
 <span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>one part of the score range and under-prediction in another therefore</span>
-<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>contribute in the same direction rather than revealing that the whole</span>
-<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>relationship is tilted. It measures *how far off* predictions are, not</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>contribute in the same direction, and the tilt in the whole relationship</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>never shows up. It measures *how far off* predictions are, not</span>
 <span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>*in which direction, systematically*.</span>
 <span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>The slope, being a regression coefficient, sees the tilt directly.</span>
@@ -940,8 +940,8 @@ div.csl-indent {
 <span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a><span class="fu">## Why this matters more than discrimination</span></span>
 <span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a>If the model feeds a ranked worklist, miscalibration is survivable — order is</span>
-<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a>preserved. If it feeds a **threshold**, it is not. A referral rule of</span>
+<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a>If the model feeds a ranked worklist, miscalibration is survivable, because</span>
+<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a>order is preserved. If it feeds a **threshold**, it is not. A referral rule of</span>
 <span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a>"investigate if p &gt; 0.7" assumes 0.7 means the same thing in every patient.</span>
 <span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a>Here it does not, and the group where it means least is the group already</span>
 <span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a>least likely to have been examined by a specialist.</span>

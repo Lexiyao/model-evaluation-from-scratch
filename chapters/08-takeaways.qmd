@@ -28,7 +28,7 @@ preceding chapters were designed to make reflexive.
    not evidence of equivalence. The moderate, plausible gap is exactly the one
    these comparisons are blind to (Chapter 5).
 
-4. **Is calibration reported at all — and with a slope or plot, not only ECE?**
+4. **Is calibration reported at all, and with a slope or plot, not only ECE?**
    A single magnitude metric cannot see a systematic tilt, and cannot see it
    *differing between groups* (Chapter 6). TRIPOD+AI now asks for this
    explicitly [@collins2024].
@@ -49,7 +49,7 @@ are the ones that matter.
 - **The bootstrap undercovers.** Measured, not assumed: across 200 replicate
   `V-VI` datasets, nominal 95% intervals held the truth about **89.5%** of the
   time. The intervals throughout are therefore, if anything, a little too
-  narrow — which only strengthens the argument. BCa or the analytic
+  narrow, which only strengthens the argument. BCa or the analytic
   Hanley–McNeil variance [@hanley1982; @efron1987] is the next step.
 
 - **The world is friendlier than reality.** Scores are equal-variance binormal
@@ -64,13 +64,13 @@ are the ones that matter.
   Chapter 7.
 
 - **The point estimates are illustrative.** The deliverable is the *behaviour of
-  the estimators* — where they recover truth and where they quietly fail — not
-  a claim that any real model has an AUROC of 0.66 in any real group.
+  the estimators*: where they recover truth and where they quietly fail. It is
+  not a claim that any real model has an AUROC of 0.66 in any real group.
 
 ## The one habit worth keeping
 
 Write the estimator down. Every metric in this book is a handful of readable
-lines checked against a reference it did not come from — `wilcox.test`, `glm`,
+lines checked against a reference it did not come from: `wilcox.test`, `glm`,
 or an answer known in closed form. That is not nostalgia for base R. It is that
 an evaluation is an argument, and an argument you cannot see all the way through
 is one you cannot defend. The fastest way to believe any of it is still to open

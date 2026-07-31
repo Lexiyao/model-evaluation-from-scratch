@@ -39,7 +39,7 @@ knitr::kable(rep[, c("group","cal_slope","ece","brier","auroc")], digits = 3,
              col.names = c("Group","Calibration slope","ECE","Brier","AUROC"))
 ```
 
-The slope says `V-VI` is badly miscalibrated — 0.50 against 1.85 in `I-II`.
+The slope says `V-VI` is badly miscalibrated: 0.50 against 1.85 in `I-II`.
 These are opposite failures: predictions too extreme in one group, too
 conservative in the other. Pooled, they average to 1.60, a number describing
 no one in the dataset.
@@ -50,8 +50,8 @@ ECE says all three groups are the same, to within 0.06.
 
 ECE takes an absolute value inside each bin. Systematic over-prediction in
 one part of the score range and under-prediction in another therefore
-contribute in the same direction rather than revealing that the whole
-relationship is tilted. It measures *how far off* predictions are, not
+contribute in the same direction, and the tilt in the whole relationship
+never shows up. It measures *how far off* predictions are, not
 *in which direction, systematically*.
 
 The slope, being a regression coefficient, sees the tilt directly.
@@ -82,8 +82,8 @@ drawn.
 
 ## Why this matters more than discrimination
 
-If the model feeds a ranked worklist, miscalibration is survivable — order is
-preserved. If it feeds a **threshold**, it is not. A referral rule of
+If the model feeds a ranked worklist, miscalibration is survivable, because
+order is preserved. If it feeds a **threshold**, it is not. A referral rule of
 "investigate if p > 0.7" assumes 0.7 means the same thing in every patient.
 Here it does not, and the group where it means least is the group already
 least likely to have been examined by a specialist.

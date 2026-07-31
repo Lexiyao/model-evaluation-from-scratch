@@ -258,7 +258,7 @@ div.csl-indent {
 </header>
 
 
-<p>Discrimination and calibration are properties of the scores. A decision is not: it needs a threshold, a line past which the model says <em>act</em>. The moment you draw that line, a new question opens — is one line right for everyone? — and the honest answer, whenever the subgroups differ in separability, is no.</p>
+<p>Discrimination and calibration are properties of the scores. A decision is not: it needs a threshold, a line past which the model says <em>act</em>. The moment you draw that line, a new question opens: is one line right for everyone? Whenever the subgroups differ in separability, the honest answer is no.</p>
 <section id="one-threshold-measured-two-ways" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="one-threshold-measured-two-ways"><span class="header-section-number">7.1</span> One threshold, measured two ways</h2>
 <p>Start with the naive policy: the same cutoff, 0.5, for every group. The equalised-odds view reports the true-positive and false-positive rates each group actually gets under that shared rule <span class="citation" data-cites="hardt2016">(<a href="#ref-hardt2016" role="doc-biblioref">1</a>)</span>.</p>
@@ -279,7 +279,7 @@ div.csl-indent {
     list(tpr = tpr, fpr = fpr, tpr_gap = max(tpr) - min(tpr), 
         fpr_gap = max(fpr) - min(fpr), worst = names(which.min(tpr)))
 }
-&lt;bytecode: 0x130bf86a0&gt;</code></pre>
+&lt;bytecode: 0x122246240&gt;</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -316,11 +316,11 @@ div.csl-indent {
 </table>
 </div>
 </div>
-<p>Read the two columns separately, because they tell opposite stories. The false-positive rates are close: the non-event scores are drawn from the same distribution in every stratum, so a fixed cutoff catches roughly the same fraction of them everywhere. It is the <strong>true-positive</strong> rate that collapses — a gap of 0.217 between the best and worst group. A shared threshold does not share the harm evenly; it hands the worst-separated group a much lower chance of being caught. That is the disparate impact hiding inside a group-blind rule.</p>
+<p>Read the two columns separately, because they tell opposite stories. The false-positive rates are close: the non-event scores are drawn from the same distribution in every stratum, so a fixed cutoff catches roughly the same fraction of them everywhere. It is the <strong>true-positive</strong> rate that collapses: a gap of 0.217 between the best and worst group. A shared threshold does not share the harm evenly; it hands the worst-separated group a much lower chance of being caught. That is the disparate impact hiding inside a group-blind rule.</p>
 </section>
 <section id="fixing-the-clinical-standard-instead" class="level2" data-number="7.2">
 <h2 data-number="7.2" class="anchored" data-anchor-id="fixing-the-clinical-standard-instead"><span class="header-section-number">7.2</span> Fixing the clinical standard instead</h2>
-<p>So flip it. Fix the thing a clinician actually cares about — “detect 90% of events” — and let each group have whatever threshold reaches it. Now the sensitivity is equal by construction, and the cost surfaces somewhere else.</p>
+<p>So flip it. Fix the thing a clinician actually cares about (“detect 90% of events”) and let each group have whatever threshold reaches it. Now the sensitivity is equal by construction, and the cost surfaces somewhere else.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>group_thresholds</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -336,7 +336,7 @@ div.csl-indent {
             sub$score, thr), row.names = NULL)
     }))
 }
-&lt;bytecode: 0x1267b6c20&gt;</code></pre>
+&lt;bytecode: 0x121f7ed88&gt;</code></pre>
 </div>
 </div>
 <div class="cell">
@@ -373,8 +373,8 @@ div.csl-indent {
 </table>
 </div>
 </div>
-<p>Every group now catches 90% of events. But look at what that costs in specificity. In <code>I-II</code> it is 0.699 — you wave through most true negatives. In <code>V-VI</code> it is 0.132: to reach the same sensitivity on a flatter ROC curve, the threshold slides down into the non-event mass and specificity falls off a cliff.</p>
-<p>Put in the terms a service feels: at the same clinical standard, the best-served group refers about <strong>30% of its negatives</strong> for follow-up, and the worst-served group refers about <strong>87%</strong> of its negatives. Same model, same rule, wildly different burden — a service-design problem, not a rounding error.</p>
+<p>Every group now catches 90% of events. But look at what that costs in specificity. In <code>I-II</code> it is 0.699, so you wave through most true negatives. In <code>V-VI</code> it is 0.132: to reach the same sensitivity on a flatter ROC curve, the threshold slides down into the non-event mass and specificity falls off a cliff.</p>
+<p>Put in the terms a service feels: at the same clinical standard, the best-served group refers about <strong>30% of its negatives</strong> for follow-up, and the worst-served group refers about <strong>87%</strong> of its negatives. Same model, same rule, wildly different burden. That is a service-design problem, not a rounding error.</p>
 </section>
 <section id="the-trade-off-is-forced-not-incidental" class="level2" data-number="7.3">
 <h2 data-number="7.3" class="anchored" data-anchor-id="the-trade-off-is-forced-not-incidental"><span class="header-section-number">7.3</span> The trade-off is forced, not incidental</h2>
@@ -389,7 +389,7 @@ div.csl-indent {
 </div>
 </div>
 </div>
-<p>Which failure to accept — more missed cases in the worst group, or more false alarms there — is a value judgement about who bears the cost of the model’s weaker grip on that group. It is not a judgement a metric can make for you, and it is certainly not one a single shared threshold makes <em>honestly</em>; it just makes it silently.</p>
+<p>Which failure to accept (more missed cases in the worst group, or more false alarms there) is a value judgement about who bears the cost of the model’s weaker grip on that group. It is not a judgement a metric can make for you, and it is certainly not one a single shared threshold makes <em>honestly</em>; it just makes it silently.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -890,8 +890,8 @@ div.csl-indent {
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>Discrimination and calibration are properties of the scores. A decision is not:</span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>it needs a threshold, a line past which the model says *act*. The moment you</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>draw that line, a new question opens — is one line right for everyone? — and</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>the honest answer, whenever the subgroups differ in separability, is no.</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>draw that line, a new question opens: is one line right for everyone? Whenever</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>the subgroups differ in separability, the honest answer is no.</span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## One threshold, measured two ways</span></span>
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
@@ -916,15 +916,15 @@ div.csl-indent {
 <span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>Read the two columns separately, because they tell opposite stories. The</span>
 <span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>false-positive rates are close: the non-event scores are drawn from the same</span>
 <span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>distribution in every stratum, so a fixed cutoff catches roughly the same</span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>fraction of them everywhere. It is the **true-positive** rate that collapses —</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>fraction of them everywhere. It is the **true-positive** rate that collapses:</span>
 <span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>a gap of <span class="in">`r round(eo$tpr_gap, 3)`</span> between the best and worst group. A shared threshold does not</span>
 <span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>share the harm evenly; it hands the worst-separated group a much lower chance</span>
 <span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>of being caught. That is the disparate impact hiding inside a group-blind rule.</span>
 <span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## Fixing the clinical standard instead</span></span>
 <span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>So flip it. Fix the thing a clinician actually cares about — "detect 90% of</span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>events" — and let each group have whatever threshold reaches it. Now the</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>So flip it. Fix the thing a clinician actually cares about ("detect 90% of</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>events") and let each group have whatever threshold reaches it. Now the</span>
 <span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>sensitivity is equal by construction, and the cost surfaces somewhere else.</span>
 <span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
@@ -938,7 +938,7 @@ div.csl-indent {
 <span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>Every group now catches 90% of events. But look at what that costs in</span>
-<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>specificity. In <span class="in">`I-II`</span> it is <span class="in">`r round(gt$specificity[gt$group == "I-II"], 3)`</span> — you wave through most true</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>specificity. In <span class="in">`I-II`</span> it is <span class="in">`r round(gt$specificity[gt$group == "I-II"], 3)`</span>, so you wave through most true</span>
 <span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>negatives. In <span class="in">`V-VI`</span> it is <span class="in">`r round(gt$specificity[gt$group == "V-VI"], 3)`</span>: to reach the same</span>
 <span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>sensitivity on a flatter ROC curve, the threshold slides down into the</span>
 <span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>non-event mass and specificity falls off a cliff.</span>
@@ -947,8 +947,8 @@ div.csl-indent {
 <span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>best-served group refers about **<span class="in">`r round((1 - gt$specificity[gt$group == "I-II"]) * 100)`</span>% of its</span>
 <span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>negatives** for follow-up, and the worst-served group refers about</span>
 <span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>**`r round((1 - gt$specificity[gt$group == "V-VI"]) * 100)`%** of its negatives. Same model,</span>
-<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>same rule, wildly different burden — a service-design problem, not a rounding</span>
-<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>error.</span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>same rule, wildly different burden. That is a service-design problem, not a</span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>rounding error.</span>
 <span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a><span class="fu">## The trade-off is forced, not incidental</span></span>
 <span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a></span>
@@ -981,8 +981,8 @@ div.csl-indent {
 <span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_eval</span>()</span>
 <span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a>Which failure to accept — more missed cases in the worst group, or more false</span>
-<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a>alarms there — is a value judgement about who bears the cost of the model's</span>
+<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a>Which failure to accept (more missed cases in the worst group, or more false</span>
+<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a>alarms there) is a value judgement about who bears the cost of the model's</span>
 <span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a>weaker grip on that group. It is not a judgement a metric can make for you, and</span>
 <span id="cb5-119"><a href="#cb5-119" aria-hidden="true" tabindex="-1"></a>it is certainly not one a single shared threshold makes *honestly*; it just</span>
 <span id="cb5-120"><a href="#cb5-120" aria-hidden="true" tabindex="-1"></a>makes it silently.</span>

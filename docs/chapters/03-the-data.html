@@ -267,7 +267,7 @@ window.Quarto = {
 </header>
 
 
-<p>To trust a measuring instrument, you calibrate it against something whose length you already know. Real evaluation data can never be that reference, because with real data the truth — the model’s actual discrimination in each subgroup — is precisely what you are trying to estimate and never get to see. So we simulate, and we simulate in a way that hands us the answer up front.</p>
+<p>To trust a measuring instrument, you calibrate it against something whose length you already know. Real evaluation data can never be that reference, because with real data the truth (the model’s actual discrimination in each subgroup) is precisely what you are trying to estimate and never get to see. So we simulate, and we simulate in a way that hands us the answer up front.</p>
 <section id="a-generator-with-a-closed-form-truth" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="a-generator-with-a-closed-form-truth"><span class="header-section-number">3.1</span> A generator with a closed-form truth</h2>
 <p>The design is deliberately plain. Within each stratum, non-events get a latent score drawn from a standard normal, and events get one shifted up by a separation <code>d</code>:</p>
@@ -291,10 +291,10 @@ window.Quarto = {
     df &lt;- do.call(rbind, out)
     df[sample(nrow(df)), ]
 }
-&lt;bytecode: 0x11435b860&gt;</code></pre>
+&lt;bytecode: 0x1301a7e70&gt;</code></pre>
 </div>
 </div>
-<p>The move that makes the whole book possible is this: for two normals of equal variance separated by <code>d</code>, the probability that a draw from the event distribution exceeds a draw from the non-event distribution — which <em>is</em> the AUROC — has a closed form.</p>
+<p>The move that makes the whole book possible is this: for two normals of equal variance separated by <code>d</code>, the probability that a draw from the event distribution exceeds a draw from the non-event distribution <em>is</em> the AUROC, and it has a closed form.</p>
 <p><span class="math display">\[
 \text{AUROC} \;=\; P(X_{\text{event}} &gt; X_{\text{non-event}})
             \;=\; \Phi\!\left(\frac{d}{\sqrt{2}}\right)
@@ -306,14 +306,14 @@ window.Quarto = {
 {
     pnorm(d/sqrt(2))
 }
-&lt;bytecode: 0x1098e3af8&gt;</code></pre>
+&lt;bytecode: 0x1329a3a88&gt;</code></pre>
 </div>
 </div>
 <p>So we do not have to wonder whether an estimate is good. We can subtract it from the right answer.</p>
 </section>
 <section id="the-three-strata" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="the-three-strata"><span class="header-section-number">3.2</span> The three strata</h2>
-<p>The separations and sizes are chosen to caricature a common situation: a model that is sharp in the group that dominates the data and dull in the group that does not, with the small group also being the one where the signal is genuinely weaker.</p>
+<p>The separations and sizes are chosen to caricature a common situation: a model that is sharp in the group that dominates the data and dull in the group that does not. The small group is also the one where the signal is genuinely weaker.</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -348,7 +348,7 @@ window.Quarto = {
 </table>
 </div>
 </div>
-<p>Two things are held fixed on purpose. The prevalence is the same <strong>0.22</strong> in every stratum, so that no performance gap can later be blamed on a difference in base rates — the gap will be about separation and sample size, nothing else. And the seed is fixed, so every number in this book is reproducible to the digit.</p>
+<p>Two things are held fixed on purpose. The prevalence is the same <strong>0.22</strong> in every stratum, so that no performance gap can later be blamed on a difference in base rates. The gap will be about separation and sample size, nothing else. And the seed is fixed, so every number in this book is reproducible to the digit.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -360,7 +360,7 @@ window.Quarto = {
 </div>
 </div>
 <p>In <code>I-II</code> the two distributions barely touch; in <code>V-VI</code> they sit almost on top of each other. That overlap is the true AUROC of 0.714, drawn.</p>
-<p>The <code>score</code> column the rest of the book uses is just this latent value squeezed through <code>plogis()</code> onto the 0–1 probability scale — a stand-in for a model that is imperfectly calibrated, which becomes the subject of Chapter 6. Everything downstream reads only <code>label</code> and <code>score</code>, exactly as it would for a real model’s output.</p>
+<p>The <code>score</code> column the rest of the book uses is just this latent value squeezed through <code>plogis()</code> onto the 0–1 probability scale: a stand-in for a model that is imperfectly calibrated, which becomes the subject of Chapter 6. Everything downstream reads only <code>label</code> and <code>score</code>, exactly as it would for a real model’s output.</p>
 <p>With a world whose answer we know, we can now write an estimator and prove it recovers that answer.</p>
 
 
@@ -843,8 +843,8 @@ window.Quarto = {
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>To trust a measuring instrument, you calibrate it against something whose</span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>length you already know. Real evaluation data can never be that reference,</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>because with real data the truth — the model's actual discrimination in each</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>subgroup — is precisely what you are trying to estimate and never get to see.</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>because with real data the truth (the model's actual discrimination in each</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>subgroup) is precisely what you are trying to estimate and never get to see.</span>
 <span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>So we simulate, and we simulate in a way that hands us the answer up front.</span>
 <span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## A generator with a closed-form truth</span></span>
@@ -859,8 +859,8 @@ window.Quarto = {
 <span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>The move that makes the whole book possible is this: for two normals of equal</span>
 <span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>variance separated by <span class="in">`d`</span>, the probability that a draw from the event</span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>distribution exceeds a draw from the non-event distribution — which *is* the</span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>AUROC — has a closed form.</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>distribution exceeds a draw from the non-event distribution *is* the AUROC,</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>and it has a closed form.</span>
 <span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>$$</span>
 <span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>\text{AUROC} \;=\; P(X_{\text{event}} &gt; X_{\text{non-event}})</span>
@@ -878,7 +878,7 @@ window.Quarto = {
 <span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>The separations and sizes are chosen to caricature a common situation: a model</span>
 <span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>that is sharp in the group that dominates the data and dull in the group that</span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>does not, with the small group also being the one where the signal is genuinely</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>does not. The small group is also the one where the signal is genuinely</span>
 <span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>weaker.</span>
 <span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
@@ -889,7 +889,7 @@ window.Quarto = {
 <span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>Two things are held fixed on purpose. The prevalence is the same **`r PREVALENCE`**</span>
 <span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>in every stratum, so that no performance gap can later be blamed on a</span>
-<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>difference in base rates — the gap will be about separation and sample size,</span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>difference in base rates. The gap will be about separation and sample size,</span>
 <span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>nothing else. And the seed is fixed, so every number in this book is</span>
 <span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>reproducible to the digit.</span>
 <span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a></span>
@@ -912,7 +912,7 @@ window.Quarto = {
 <span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a>of each other. That overlap is the true AUROC of <span class="in">`r round(tt$true_auroc[tt$group == "V-VI"], 3)`</span>, drawn.</span>
 <span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a>The <span class="in">`score`</span> column the rest of the book uses is just this latent value squeezed</span>
-<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a>through <span class="in">`plogis()`</span> onto the 0–1 probability scale — a stand-in for a model that</span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a>through <span class="in">`plogis()`</span> onto the 0–1 probability scale: a stand-in for a model that</span>
 <span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a>is imperfectly calibrated, which becomes the subject of Chapter 6. Everything</span>
 <span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a>downstream reads only <span class="in">`label`</span> and <span class="in">`score`</span>, exactly as it would for a real</span>
 <span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a>model's output.</span>

@@ -21,7 +21,7 @@ base R:
 
 Nothing is hidden inside a package. Every metric is a few lines you can read,
 change, and break, and every one is checked in `R/_test_engine.R` against an
-independent reference — `wilcox.test`, `glm` — or against an answer known in
+independent reference (`wilcox.test`, `glm`) or against an answer known in
 closed form.
 
 ::: {.callout-note}
@@ -29,9 +29,9 @@ closed form.
 
 No patient record, cohort, or image dataset is used or shared anywhere in this
 project. The simulation is not a shortcut; it is the point. Because the true
-AUROC in each subgroup is chosen up front and has a closed form — Φ(d/√2) for
-binormal scores with separation *d* — every estimate in these pages can be
-judged against the right answer rather than against another estimate. You
+AUROC in each subgroup is chosen up front and has a closed form (Φ(d/√2) for
+binormal scores with separation *d*), every estimate in these pages can be
+judged against the right answer, not against another estimate. You
 cannot do that with real data, because with real data you never know the
 truth.
 :::
@@ -41,7 +41,7 @@ truth.
 The chapters build in order. Chapter 1 shows the headline number and what it
 hides. Chapters 2 and 3 set up the three questions any evaluation must answer
 and the simulated world we will answer them in. Chapters 4 through 7 build the
-tools — discrimination, uncertainty, calibration, thresholds — and Chapter 8 is
+tools (discrimination, uncertainty, calibration, thresholds), and Chapter 8 is
 a checklist you can take to the next model-evaluation paper you read.
 
 The fastest way to understand any of it is to break the simulation on purpose.

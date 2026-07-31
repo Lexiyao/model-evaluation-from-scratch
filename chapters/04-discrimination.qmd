@@ -23,15 +23,15 @@ auroc
 Rank all the scores; sum the ranks belonging to the events; subtract the ranks
 those events would occupy if they were all crammed at the bottom
 ($n_1(n_1+1)/2$); divide by the number of event/non-event pairs $n_1 n_0$. What
-comes out is the fraction of pairs the model orders correctly — the
+comes out is the fraction of pairs the model orders correctly: the
 Mann-Whitney U statistic, rescaled. Ties contribute exactly one half, and using
 average ranks builds that half-credit in with no special case.
 
 ## Is it right? Two checks
 
 A one-line estimator is easy to get subtly wrong, so we never take it on faith.
-First, against a completely different code path — `wilcox.test`, which computes
-the same U statistic through R's own rank machinery:
+First, against a completely different code path (`wilcox.test`, which computes
+the same U statistic through R's own rank machinery):
 
 ```{r}
 w <- wilcox.test(score ~ factor(label), data = df, exact = FALSE)
@@ -40,8 +40,8 @@ c(ours = auroc(df$label, df$score), wilcox = 1 - u_ref)
 ```
 
 Identical to machine precision. That pins the *implementation*. But a
-numerically perfect estimator of the wrong quantity is still wrong, so the
-second check is against the truth the simulator planted — the analytic
+numerically perfect estimator of the wrong quantity is still wrong. The
+second check is against the truth the simulator planted, the analytic
 $\Phi(d/\sqrt{2})$ from the previous chapter:
 
 ```{r}
@@ -57,7 +57,7 @@ knitr::kable(
 )
 ```
 
-Close everywhere, and closest where the sample is largest — exactly the
+Close everywhere, and closest where the sample is largest. That is exactly the
 behaviour a consistent estimator should show. The estimate in `V-VI` is
 **`r round(est["V-VI"], 3)`** against a truth of `r round(tt$true_auroc[tt$group == "V-VI"], 3)`: an error of
 `r round(est["V-VI"] - tt$true_auroc[tt$group == "V-VI"], 3)` on 160 patients. Whether that gap is
@@ -83,5 +83,5 @@ A model can post an AUROC of `r round(auroc(df$label, df$score), 2)` and still b
 unsafe at any given threshold.
 
 AUROC sees the order and nothing else. To find out whether the numbers
-themselves can be trusted — and whether the `r round(est["V-VI"], 3)` in `V-VI` is real — we need to
+themselves can be trusted (and whether the `r round(est["V-VI"], 3)` in `V-VI` is real), we need to
 put a confidence interval on it, and then a second question entirely.

@@ -259,7 +259,7 @@ div.csl-indent {
 </header>
 
 
-<p>Chapter 4 produced an estimate of 0.655 in the smallest stratum against a truth of 0.714. The question this chapter answers is whether that discrepancy was detectable — and, more usefully, whether the study could have detected anything at all.</p>
+<p>Chapter 4 produced an estimate of 0.655 in the smallest stratum against a truth of 0.714. The question this chapter answers is whether that discrepancy was detectable and, more usefully, whether the study could have detected anything at all.</p>
 <section id="the-stratified-bootstrap" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="the-stratified-bootstrap"><span class="header-section-number">5.1</span> The stratified bootstrap</h2>
 <p>Resample with replacement, recompute, repeat, take percentiles. The only subtlety worth caring about is that resampling is done <strong>within outcome class</strong>:</p>
@@ -285,7 +285,7 @@ div.csl-indent {
     q &lt;- quantile(stats, c(alpha/2, 1 - alpha/2), names = FALSE)
     c(estimate = point, lower = q[1], upper = q[2])
 }
-&lt;bytecode: 0x114955eb0&gt;</code></pre>
+&lt;bytecode: 0x10ca22e10&gt;</code></pre>
 </div>
 </div>
 <p>Resampling rows without regard to outcome regularly produces, in a stratum of 39 events, replicates containing no events at all. The metric is then undefined, those replicates get quietly dropped, and the interval becomes a statement about which replicates happened to survive. Stratifying fixes it.</p>
@@ -362,7 +362,7 @@ div.csl-indent {
 </div>
 </div>
 </div>
-<p>The interval in <code>V-VI</code> is <strong>0.196 wide</strong> — six times the pooled interval. It spans from “barely better than chance” to “clinically respectable”. Reported as “AUROC 0.66 in Fitzpatrick V–VI”, which is how it would appear in a table, that estimate conveys a precision it does not have.</p>
+<p>The interval in <code>V-VI</code> is <strong>0.196 wide</strong>, six times the pooled interval. It spans from “barely better than chance” to “clinically respectable”. Reported as “AUROC 0.66 in Fitzpatrick V–VI”, which is how it would appear in a table, that estimate conveys a precision it does not have.</p>
 </section>
 <section id="the-gap-you-cannot-see-is-the-moderate-one" class="level2" data-number="5.3">
 <h2 data-number="5.3" class="anchored" data-anchor-id="the-gap-you-cannot-see-is-the-moderate-one"><span class="header-section-number">5.3</span> The gap you cannot see is the moderate one</h2>
@@ -400,7 +400,7 @@ V-VI     V-VI    0.178          40          39</code></pre>
 </section>
 <section id="the-bootstrap-is-not-free-either" class="level2" data-number="5.4">
 <h2 data-number="5.4" class="anchored" data-anchor-id="the-bootstrap-is-not-free-either"><span class="header-section-number">5.4</span> The bootstrap is not free either</h2>
-<p>The intervals above are percentile intervals, which are known to undercover in small samples <span class="citation" data-cites="efron1987">(<a href="#ref-efron1987" role="doc-biblioref">1</a>)</span>. Rather than note this and move on, measure it — simulate 200 fresh datasets and count how often the nominal 95% interval actually contains the truth:</p>
+<p>The intervals above are percentile intervals, which are known to undercover in small samples <span class="citation" data-cites="efron1987">(<a href="#ref-efron1987" role="doc-biblioref">1</a>)</span>. So measure it. Simulate 200 fresh datasets and count how often the nominal 95% interval actually contains the truth:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>covered <span class="ot">&lt;-</span> <span class="dv">0</span>; n_rep <span class="ot">&lt;-</span> <span class="dv">200</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>truth <span class="ot">&lt;-</span> <span class="fu">true_auroc</span>(GROUPS[[<span class="st">"V-VI"</span>]]<span class="sc">$</span>d)</span>
@@ -417,7 +417,7 @@ V-VI     V-VI    0.178          40          39</code></pre>
 <pre><code>[1] 0.895</code></pre>
 </div>
 </div>
-<p><strong>89.5%, not 95%.</strong> The intervals in this chapter are, if anything, too narrow — which strengthens the argument rather than weakening it. BCa intervals or the analytic Hanley–McNeil variance <span class="citation" data-cites="hanley1982">(<a href="#ref-hanley1982" role="doc-biblioref">2</a>)</span> would be the next step.</p>
+<p><strong>89.5%, not 95%.</strong> The intervals in this chapter are, if anything, too narrow, which strengthens the argument. BCa intervals or the analytic Hanley–McNeil variance <span class="citation" data-cites="hanley1982">(<a href="#ref-hanley1982" role="doc-biblioref">2</a>)</span> would be the next step.</p>
 
 
 <!-- -->
@@ -908,7 +908,7 @@ V-VI     V-VI    0.178          40          39</code></pre>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>Chapter 4 produced an estimate of 0.655 in the smallest stratum against a</span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>truth of 0.714. The question this chapter answers is whether that discrepancy</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>was detectable — and, more usefully, whether the study could have detected</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>was detectable and, more usefully, whether the study could have detected</span>
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>anything at all.</span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## The stratified bootstrap</span></span>
@@ -956,7 +956,7 @@ V-VI     V-VI    0.178          40          39</code></pre>
 <span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_eval</span>()</span>
 <span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>The interval in <span class="in">`V-VI`</span> is **0.196 wide** — six times the pooled interval. It</span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>The interval in <span class="in">`V-VI`</span> is **0.196 wide**, six times the pooled interval. It</span>
 <span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a>spans from "barely better than chance" to "clinically respectable". Reported</span>
 <span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>as "AUROC 0.66 in Fitzpatrick V–VI", which is how it would appear in a table,</span>
 <span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>that estimate conveys a precision it does not have.</span>
@@ -999,29 +999,27 @@ V-VI     V-VI    0.178          40          39</code></pre>
 <span id="cb7-111"><a href="#cb7-111" aria-hidden="true" tabindex="-1"></a><span class="fu">## The bootstrap is not free either</span></span>
 <span id="cb7-112"><a href="#cb7-112" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-113"><a href="#cb7-113" aria-hidden="true" tabindex="-1"></a>The intervals above are percentile intervals, which are known to undercover</span>
-<span id="cb7-114"><a href="#cb7-114" aria-hidden="true" tabindex="-1"></a>in small samples <span class="co">[</span><span class="ot">@efron1987</span><span class="co">]</span>. Rather than note this and move on, measure it</span>
-<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a>— simulate 200 fresh datasets and count how often the nominal 95% interval</span>
-<span id="cb7-116"><a href="#cb7-116" aria-hidden="true" tabindex="-1"></a>actually contains the truth:</span>
-<span id="cb7-117"><a href="#cb7-117" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: true</span></span>
-<span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a>covered <span class="ot">&lt;-</span> <span class="dv">0</span>; n_rep <span class="ot">&lt;-</span> <span class="dv">200</span></span>
-<span id="cb7-123"><a href="#cb7-123" aria-hidden="true" tabindex="-1"></a>truth <span class="ot">&lt;-</span> <span class="fu">true_auroc</span>(GROUPS[[<span class="st">"V-VI"</span>]]<span class="sc">$</span>d)</span>
-<span id="cb7-124"><a href="#cb7-124" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (r <span class="cf">in</span> <span class="fu">seq_len</span>(n_rep)) {</span>
-<span id="cb7-125"><a href="#cb7-125" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">10000</span> <span class="sc">+</span> r)</span>
-<span id="cb7-126"><a href="#cb7-126" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">160</span>, <span class="dv">1</span>, PREVALENCE)</span>
-<span id="cb7-127"><a href="#cb7-127" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">rnorm</span>(<span class="dv">160</span>, <span class="at">mean =</span> y <span class="sc">*</span> GROUPS[[<span class="st">"V-VI"</span>]]<span class="sc">$</span>d, <span class="at">sd =</span> <span class="dv">1</span>))</span>
-<span id="cb7-128"><a href="#cb7-128" aria-hidden="true" tabindex="-1"></a>  ci <span class="ot">&lt;-</span> <span class="fu">boot_ci</span>(y, s, auroc, <span class="at">n_boot =</span> <span class="dv">400</span>L, <span class="at">seed =</span> r)</span>
-<span id="cb7-129"><a href="#cb7-129" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(ci[[<span class="st">"lower"</span>]]) <span class="sc">&amp;&amp;</span> truth <span class="sc">&gt;=</span> ci[[<span class="st">"lower"</span>]] <span class="sc">&amp;&amp;</span> truth <span class="sc">&lt;=</span> ci[[<span class="st">"upper"</span>]])</span>
-<span id="cb7-130"><a href="#cb7-130" aria-hidden="true" tabindex="-1"></a>    covered <span class="ot">&lt;-</span> covered <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb7-131"><a href="#cb7-131" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a>covered <span class="sc">/</span> n_rep</span>
-<span id="cb7-133"><a href="#cb7-133" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-135"><a href="#cb7-135" aria-hidden="true" tabindex="-1"></a>**89.5%, not 95%.** The intervals in this chapter are, if anything, too</span>
-<span id="cb7-136"><a href="#cb7-136" aria-hidden="true" tabindex="-1"></a>narrow — which strengthens the argument rather than weakening it. BCa</span>
-<span id="cb7-137"><a href="#cb7-137" aria-hidden="true" tabindex="-1"></a>intervals or the analytic Hanley–McNeil variance <span class="co">[</span><span class="ot">@hanley1982</span><span class="co">]</span> would be the</span>
-<span id="cb7-138"><a href="#cb7-138" aria-hidden="true" tabindex="-1"></a>next step.</span>
+<span id="cb7-114"><a href="#cb7-114" aria-hidden="true" tabindex="-1"></a>in small samples <span class="co">[</span><span class="ot">@efron1987</span><span class="co">]</span>. So measure it. Simulate 200 fresh datasets and</span>
+<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a>count how often the nominal 95% interval actually contains the truth:</span>
+<span id="cb7-116"><a href="#cb7-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-119"><a href="#cb7-119" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: true</span></span>
+<span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a>covered <span class="ot">&lt;-</span> <span class="dv">0</span>; n_rep <span class="ot">&lt;-</span> <span class="dv">200</span></span>
+<span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a>truth <span class="ot">&lt;-</span> <span class="fu">true_auroc</span>(GROUPS[[<span class="st">"V-VI"</span>]]<span class="sc">$</span>d)</span>
+<span id="cb7-123"><a href="#cb7-123" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (r <span class="cf">in</span> <span class="fu">seq_len</span>(n_rep)) {</span>
+<span id="cb7-124"><a href="#cb7-124" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set.seed</span>(<span class="dv">10000</span> <span class="sc">+</span> r)</span>
+<span id="cb7-125"><a href="#cb7-125" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">160</span>, <span class="dv">1</span>, PREVALENCE)</span>
+<span id="cb7-126"><a href="#cb7-126" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">&lt;-</span> <span class="fu">plogis</span>(<span class="fu">rnorm</span>(<span class="dv">160</span>, <span class="at">mean =</span> y <span class="sc">*</span> GROUPS[[<span class="st">"V-VI"</span>]]<span class="sc">$</span>d, <span class="at">sd =</span> <span class="dv">1</span>))</span>
+<span id="cb7-127"><a href="#cb7-127" aria-hidden="true" tabindex="-1"></a>  ci <span class="ot">&lt;-</span> <span class="fu">boot_ci</span>(y, s, auroc, <span class="at">n_boot =</span> <span class="dv">400</span>L, <span class="at">seed =</span> r)</span>
+<span id="cb7-128"><a href="#cb7-128" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(ci[[<span class="st">"lower"</span>]]) <span class="sc">&amp;&amp;</span> truth <span class="sc">&gt;=</span> ci[[<span class="st">"lower"</span>]] <span class="sc">&amp;&amp;</span> truth <span class="sc">&lt;=</span> ci[[<span class="st">"upper"</span>]])</span>
+<span id="cb7-129"><a href="#cb7-129" aria-hidden="true" tabindex="-1"></a>    covered <span class="ot">&lt;-</span> covered <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb7-130"><a href="#cb7-130" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-131"><a href="#cb7-131" aria-hidden="true" tabindex="-1"></a>covered <span class="sc">/</span> n_rep</span>
+<span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-133"><a href="#cb7-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a>**89.5%, not 95%.** The intervals in this chapter are, if anything, too</span>
+<span id="cb7-135"><a href="#cb7-135" aria-hidden="true" tabindex="-1"></a>narrow, which strengthens the argument. BCa intervals or the analytic</span>
+<span id="cb7-136"><a href="#cb7-136" aria-hidden="true" tabindex="-1"></a>Hanley–McNeil variance <span class="co">[</span><span class="ot">@hanley1982</span><span class="co">]</span> would be the next step.</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

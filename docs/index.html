@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Zixi Yao">
-<meta name="dcterms.date" content="2026-07-28">
+<meta name="dcterms.date" content="2026-07-31">
 
 <title>Model Evaluation from Scratch</title>
 <style>
@@ -243,7 +243,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 28, 2026</p>
+      <p class="date">July 31, 2026</p>
     </div>
   </div>
   
@@ -266,7 +266,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>equalised-odds gaps and per-group thresholds;</li>
 <li>and a power calculation for the subgroup differences everyone reports and almost no one is powered to detect.</li>
 </ul>
-<p>Nothing is hidden inside a package. Every metric is a few lines you can read, change, and break, and every one is checked in <code>R/_test_engine.R</code> against an independent reference — <code>wilcox.test</code>, <code>glm</code> — or against an answer known in closed form.</p>
+<p>Nothing is hidden inside a package. Every metric is a few lines you can read, change, and break, and every one is checked in <code>R/_test_engine.R</code> against an independent reference (<code>wilcox.test</code>, <code>glm</code>) or against an answer known in closed form.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -277,12 +277,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>No patient record, cohort, or image dataset is used or shared anywhere in this project. The simulation is not a shortcut; it is the point. Because the true AUROC in each subgroup is chosen up front and has a closed form — Φ(d/√2) for binormal scores with separation <em>d</em> — every estimate in these pages can be judged against the right answer rather than against another estimate. You cannot do that with real data, because with real data you never know the truth.</p>
+<p>No patient record, cohort, or image dataset is used or shared anywhere in this project. The simulation is not a shortcut; it is the point. Because the true AUROC in each subgroup is chosen up front and has a closed form (Φ(d/√2) for binormal scores with separation <em>d</em>), every estimate in these pages can be judged against the right answer, not against another estimate. You cannot do that with real data, because with real data you never know the truth.</p>
 </div>
 </div>
 <section id="how-to-read-it" class="level2">
 <h2 class="anchored" data-anchor-id="how-to-read-it">How to read it</h2>
-<p>The chapters build in order. Chapter 1 shows the headline number and what it hides. Chapters 2 and 3 set up the three questions any evaluation must answer and the simulated world we will answer them in. Chapters 4 through 7 build the tools — discrimination, uncertainty, calibration, thresholds — and Chapter 8 is a checklist you can take to the next model-evaluation paper you read.</p>
+<p>The chapters build in order. Chapter 1 shows the headline number and what it hides. Chapters 2 and 3 set up the three questions any evaluation must answer and the simulated world we will answer them in. Chapters 4 through 7 build the tools (discrimination, uncertainty, calibration, thresholds), and Chapter 8 is a checklist you can take to the next model-evaluation paper you read.</p>
 <p>The fastest way to understand any of it is to break the simulation on purpose. Open <code>R/simulate.R</code>, change the separation <code>d</code> in one stratum, or shrink an <code>n</code> until the interval swallows the effect, and re-render. The estimators will tell you what you did.</p>
 </section>
 <section id="running-the-code" class="level2">
@@ -782,7 +782,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>Nothing is hidden inside a package. Every metric is a few lines you can read,</span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>change, and break, and every one is checked in <span class="in">`R/_test_engine.R`</span> against an</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>independent reference — <span class="in">`wilcox.test`</span>, <span class="in">`glm`</span> — or against an answer known in</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>independent reference (<span class="in">`wilcox.test`</span>, <span class="in">`glm`</span>) or against an answer known in</span>
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>closed form.</span>
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
@@ -790,9 +790,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>No patient record, cohort, or image dataset is used or shared anywhere in this</span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>project. The simulation is not a shortcut; it is the point. Because the true</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>AUROC in each subgroup is chosen up front and has a closed form — Φ(d/√2) for</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>binormal scores with separation *d* — every estimate in these pages can be</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>judged against the right answer rather than against another estimate. You</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>AUROC in each subgroup is chosen up front and has a closed form (Φ(d/√2) for</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>binormal scores with separation *d*), every estimate in these pages can be</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>judged against the right answer, not against another estimate. You</span>
 <span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>cannot do that with real data, because with real data you never know the</span>
 <span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>truth.</span>
 <span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>:::</span>
@@ -802,7 +802,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>The chapters build in order. Chapter 1 shows the headline number and what it</span>
 <span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>hides. Chapters 2 and 3 set up the three questions any evaluation must answer</span>
 <span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>and the simulated world we will answer them in. Chapters 4 through 7 build the</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>tools — discrimination, uncertainty, calibration, thresholds — and Chapter 8 is</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>tools (discrimination, uncertainty, calibration, thresholds), and Chapter 8 is</span>
 <span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>a checklist you can take to the next model-evaluation paper you read.</span>
 <span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>The fastest way to understand any of it is to break the simulation on purpose.</span>

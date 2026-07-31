@@ -265,7 +265,7 @@ div.csl-indent {
 <li><p><strong>Is the headline number pooled?</strong> If so, it is the largest subgroup’s number wearing everyone’s name. Ask for the breakdown (Chapter 1).</p></li>
 <li><p><strong>Are subgroup estimates reported with intervals, and do the intervals use events, not rows?</strong> A stratum of 5,000 patients with 39 events is a stratum of 39. The interval, not the point, is the finding (Chapters 4–5).</p></li>
 <li><p><strong>Does “no significant difference between subgroups” come with a power statement?</strong> Without one it is the expected result of an underpowered test, not evidence of equivalence. The moderate, plausible gap is exactly the one these comparisons are blind to (Chapter 5).</p></li>
-<li><p><strong>Is calibration reported at all — and with a slope or plot, not only ECE?</strong> A single magnitude metric cannot see a systematic tilt, and cannot see it <em>differing between groups</em> (Chapter 6). TRIPOD+AI now asks for this explicitly <span class="citation" data-cites="collins2024">(<a href="#ref-collins2024" role="doc-biblioref">1</a>)</span>.</p></li>
+<li><p><strong>Is calibration reported at all, and with a slope or plot, not only ECE?</strong> A single magnitude metric cannot see a systematic tilt, and cannot see it <em>differing between groups</em> (Chapter 6). TRIPOD+AI now asks for this explicitly <span class="citation" data-cites="collins2024">(<a href="#ref-collins2024" role="doc-biblioref">1</a>)</span>.</p></li>
 <li><p><strong>What threshold is used, and what does it cost each group?</strong> A shared cutoff is a policy that equalises false positives and unequal-ises sensitivity. Name the operating point and its per-subgroup sensitivity and specificity (Chapter 7).</p></li>
 <li><p><strong>Could you reproduce any of it?</strong> A seed, the code, and the estimators in the open are the difference between a claim and a result.</p></li>
 </ol>
@@ -274,15 +274,15 @@ div.csl-indent {
 <h2 data-number="8.2" class="anchored" data-anchor-id="what-this-book-did-not-do-on-purpose"><span class="header-section-number">8.2</span> What this book did not do, on purpose</h2>
 <p>The point of validating on simulated data is to be honest about limits, so here are the ones that matter.</p>
 <ul>
-<li><p><strong>The bootstrap undercovers.</strong> Measured, not assumed: across 200 replicate <code>V-VI</code> datasets, nominal 95% intervals held the truth about <strong>89.5%</strong> of the time. The intervals throughout are therefore, if anything, a little too narrow — which only strengthens the argument. BCa or the analytic Hanley–McNeil variance <span class="citation" data-cites="hanley1982 efron1987">(<a href="#ref-hanley1982" role="doc-biblioref">2</a>,<a href="#ref-efron1987" role="doc-biblioref">3</a>)</span> is the next step.</p></li>
+<li><p><strong>The bootstrap undercovers.</strong> Measured, not assumed: across 200 replicate <code>V-VI</code> datasets, nominal 95% intervals held the truth about <strong>89.5%</strong> of the time. The intervals throughout are therefore, if anything, a little too narrow, which only strengthens the argument. BCa or the analytic Hanley–McNeil variance <span class="citation" data-cites="hanley1982 efron1987">(<a href="#ref-hanley1982" role="doc-biblioref">2</a>,<a href="#ref-efron1987" role="doc-biblioref">3</a>)</span> is the next step.</p></li>
 <li><p><strong>The world is friendlier than reality.</strong> Scores are equal-variance binormal and prevalence is held constant across strata. Both make the estimators’ lives easier; a messier distribution can only widen the gaps shown here, not invent them. Holding prevalence fixed was a choice to isolate separation from base rate, not a claim that real subgroups share a base rate.</p></li>
 <li><p><strong>Utility is treated only through the threshold.</strong> A full decision-curve or net-benefit analysis <span class="citation" data-cites="vickers2006">(<a href="#ref-vickers2006" role="doc-biblioref">4</a>)</span> would weigh the asymmetric costs of a false alarm against a missed case directly, and is the natural sequel to Chapter 7.</p></li>
-<li><p><strong>The point estimates are illustrative.</strong> The deliverable is the <em>behaviour of the estimators</em> — where they recover truth and where they quietly fail — not a claim that any real model has an AUROC of 0.66 in any real group.</p></li>
+<li><p><strong>The point estimates are illustrative.</strong> The deliverable is the <em>behaviour of the estimators</em>: where they recover truth and where they quietly fail. It is not a claim that any real model has an AUROC of 0.66 in any real group.</p></li>
 </ul>
 </section>
 <section id="the-one-habit-worth-keeping" class="level2" data-number="8.3">
 <h2 data-number="8.3" class="anchored" data-anchor-id="the-one-habit-worth-keeping"><span class="header-section-number">8.3</span> The one habit worth keeping</h2>
-<p>Write the estimator down. Every metric in this book is a handful of readable lines checked against a reference it did not come from — <code>wilcox.test</code>, <code>glm</code>, or an answer known in closed form. That is not nostalgia for base R. It is that an evaluation is an argument, and an argument you cannot see all the way through is one you cannot defend. The fastest way to believe any of it is still to open <code>R/simulate.R</code>, break the world on purpose, and watch the numbers tell on you.</p>
+<p>Write the estimator down. Every metric in this book is a handful of readable lines checked against a reference it did not come from: <code>wilcox.test</code>, <code>glm</code>, or an answer known in closed form. That is not nostalgia for base R. It is that an evaluation is an argument, and an argument you cannot see all the way through is one you cannot defend. The fastest way to believe any of it is still to open <code>R/simulate.R</code>, break the world on purpose, and watch the numbers tell on you.</p>
 
 
 <!-- -->
@@ -794,7 +794,7 @@ div.csl-indent {
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>   not evidence of equivalence. The moderate, plausible gap is exactly the one</span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>   these comparisons are blind to (Chapter 5).</span>
 <span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Is calibration reported at all — and with a slope or plot, not only ECE?**</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Is calibration reported at all, and with a slope or plot, not only ECE?**</span>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>   A single magnitude metric cannot see a systematic tilt, and cannot see it</span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>   *differing between groups* (Chapter 6). TRIPOD+AI now asks for this</span>
 <span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>   explicitly <span class="co">[</span><span class="ot">@collins2024</span><span class="co">]</span>.</span>
@@ -815,7 +815,7 @@ div.csl-indent {
 <span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**The bootstrap undercovers.** Measured, not assumed: across 200 replicate</span>
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  <span class="in">`V-VI`</span> datasets, nominal 95% intervals held the truth about **89.5%** of the</span>
 <span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  time. The intervals throughout are therefore, if anything, a little too</span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  narrow — which only strengthens the argument. BCa or the analytic</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  narrow, which only strengthens the argument. BCa or the analytic</span>
 <span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  Hanley–McNeil variance <span class="co">[</span><span class="ot">@hanley1982; @efron1987</span><span class="co">]</span> is the next step.</span>
 <span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**The world is friendlier than reality.** Scores are equal-variance binormal</span>
@@ -830,13 +830,13 @@ div.csl-indent {
 <span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>  Chapter 7.</span>
 <span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**The point estimates are illustrative.** The deliverable is the *behaviour of</span>
-<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>  the estimators* — where they recover truth and where they quietly fail — not</span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>  a claim that any real model has an AUROC of 0.66 in any real group.</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>  the estimators*: where they recover truth and where they quietly fail. It is</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>  not a claim that any real model has an AUROC of 0.66 in any real group.</span>
 <span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="fu">## The one habit worth keeping</span></span>
 <span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>Write the estimator down. Every metric in this book is a handful of readable</span>
-<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>lines checked against a reference it did not come from — <span class="in">`wilcox.test`</span>, <span class="in">`glm`</span>,</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>lines checked against a reference it did not come from: <span class="in">`wilcox.test`</span>, <span class="in">`glm`</span>,</span>
 <span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>or an answer known in closed form. That is not nostalgia for base R. It is that</span>
 <span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>an evaluation is an argument, and an argument you cannot see all the way through</span>
 <span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>is one you cannot defend. The fastest way to believe any of it is still to open</span>

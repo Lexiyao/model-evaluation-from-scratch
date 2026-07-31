@@ -285,11 +285,11 @@ window.Quarto = {
 }</code></pre>
 </div>
 </div>
-<p>Rank all the scores; sum the ranks belonging to the events; subtract the ranks those events would occupy if they were all crammed at the bottom (<span class="math inline">\(n_1(n_1+1)/2\)</span>); divide by the number of event/non-event pairs <span class="math inline">\(n_1 n_0\)</span>. What comes out is the fraction of pairs the model orders correctly — the Mann-Whitney U statistic, rescaled. Ties contribute exactly one half, and using average ranks builds that half-credit in with no special case.</p>
+<p>Rank all the scores; sum the ranks belonging to the events; subtract the ranks those events would occupy if they were all crammed at the bottom (<span class="math inline">\(n_1(n_1+1)/2\)</span>); divide by the number of event/non-event pairs <span class="math inline">\(n_1 n_0\)</span>. What comes out is the fraction of pairs the model orders correctly: the Mann-Whitney U statistic, rescaled. Ties contribute exactly one half, and using average ranks builds that half-credit in with no special case.</p>
 </section>
 <section id="is-it-right-two-checks" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="is-it-right-two-checks"><span class="header-section-number">4.2</span> Is it right? Two checks</h2>
-<p>A one-line estimator is easy to get subtly wrong, so we never take it on faith. First, against a completely different code path — <code>wilcox.test</code>, which computes the same U statistic through R’s own rank machinery:</p>
+<p>A one-line estimator is easy to get subtly wrong, so we never take it on faith. First, against a completely different code path (<code>wilcox.test</code>, which computes the same U statistic through R’s own rank machinery):</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">wilcox.test</span>(score <span class="sc">~</span> <span class="fu">factor</span>(label), <span class="at">data =</span> df, <span class="at">exact =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>u_ref <span class="ot">&lt;-</span> <span class="fu">unname</span>(w<span class="sc">$</span>statistic) <span class="sc">/</span> (<span class="fu">sum</span>(df<span class="sc">$</span>label <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">*</span> <span class="fu">sum</span>(df<span class="sc">$</span>label <span class="sc">==</span> <span class="dv">1</span>))</span>
@@ -299,7 +299,7 @@ window.Quarto = {
 0.8674829 0.8674829 </code></pre>
 </div>
 </div>
-<p>Identical to machine precision. That pins the <em>implementation</em>. But a numerically perfect estimator of the wrong quantity is still wrong, so the second check is against the truth the simulator planted — the analytic <span class="math inline">\(\Phi(d/\sqrt{2})\)</span> from the previous chapter:</p>
+<p>Identical to machine precision. That pins the <em>implementation</em>. But a numerically perfect estimator of the wrong quantity is still wrong. The second check is against the truth the simulator planted, the analytic <span class="math inline">\(\Phi(d/\sqrt{2})\)</span> from the previous chapter:</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -338,7 +338,7 @@ window.Quarto = {
 </table>
 </div>
 </div>
-<p>Close everywhere, and closest where the sample is largest — exactly the behaviour a consistent estimator should show. The estimate in <code>V-VI</code> is <strong>0.655</strong> against a truth of 0.714: an error of -0.059 on 160 patients. Whether that gap is alarming or just sampling noise is not a question the point estimate can answer, and it is the subject of the next chapter.</p>
+<p>Close everywhere, and closest where the sample is largest. That is exactly the behaviour a consistent estimator should show. The estimate in <code>V-VI</code> is <strong>0.655</strong> against a truth of 0.714: an error of -0.059 on 160 patients. Whether that gap is alarming or just sampling noise is not a question the point estimate can answer, and it is the subject of the next chapter.</p>
 </section>
 <section id="what-discrimination-cannot-see" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="what-discrimination-cannot-see"><span class="header-section-number">4.3</span> What discrimination cannot see</h2>
@@ -352,7 +352,7 @@ window.Quarto = {
 </div>
 </div>
 <p>This is a feature and a warning at once. A feature, because it means a badly scaled or miscalibrated model can still discriminate perfectly, and ranking is the one property recalibration cannot destroy. A warning, because it means the AUROC is structurally blind to whether the probabilities mean anything at all. A model can post an AUROC of 0.87 and still be uninterpretable and unsafe at any given threshold.</p>
-<p>AUROC sees the order and nothing else. To find out whether the numbers themselves can be trusted — and whether the 0.655 in <code>V-VI</code> is real — we need to put a confidence interval on it, and then a second question entirely.</p>
+<p>AUROC sees the order and nothing else. To find out whether the numbers themselves can be trusted (and whether the 0.655 in <code>V-VI</code> is real), we need to put a confidence interval on it, and then a second question entirely.</p>
 
 
 <!-- -->
@@ -848,15 +848,15 @@ window.Quarto = {
 <span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>Rank all the scores; sum the ranks belonging to the events; subtract the ranks</span>
 <span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>those events would occupy if they were all crammed at the bottom</span>
 <span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>($n_1(n_1+1)/2$); divide by the number of event/non-event pairs $n_1 n_0$. What</span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>comes out is the fraction of pairs the model orders correctly — the</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>comes out is the fraction of pairs the model orders correctly: the</span>
 <span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>Mann-Whitney U statistic, rescaled. Ties contribute exactly one half, and using</span>
 <span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>average ranks builds that half-credit in with no special case.</span>
 <span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a><span class="fu">## Is it right? Two checks</span></span>
 <span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>A one-line estimator is easy to get subtly wrong, so we never take it on faith.</span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>First, against a completely different code path — <span class="in">`wilcox.test`</span>, which computes</span>
-<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>the same U statistic through R's own rank machinery:</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>First, against a completely different code path (<span class="in">`wilcox.test`</span>, which computes</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>the same U statistic through R's own rank machinery):</span>
 <span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">wilcox.test</span>(score <span class="sc">~</span> <span class="fu">factor</span>(label), <span class="at">data =</span> df, <span class="at">exact =</span> <span class="cn">FALSE</span>)</span>
@@ -865,8 +865,8 @@ window.Quarto = {
 <span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>Identical to machine precision. That pins the *implementation*. But a</span>
-<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>numerically perfect estimator of the wrong quantity is still wrong, so the</span>
-<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>second check is against the truth the simulator planted — the analytic</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>numerically perfect estimator of the wrong quantity is still wrong. The</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>second check is against the truth the simulator planted, the analytic</span>
 <span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>$\Phi(d/\sqrt{2})$ from the previous chapter:</span>
 <span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
@@ -882,7 +882,7 @@ window.Quarto = {
 <span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>Close everywhere, and closest where the sample is largest — exactly the</span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>Close everywhere, and closest where the sample is largest. That is exactly the</span>
 <span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>behaviour a consistent estimator should show. The estimate in <span class="in">`V-VI`</span> is</span>
 <span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a>**`r round(est["V-VI"], 3)`** against a truth of <span class="in">`r round(tt$true_auroc[tt$group == "V-VI"], 3)`</span>: an error of</span>
 <span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a><span class="in">`r round(est["V-VI"] - tt$true_auroc[tt$group == "V-VI"], 3)`</span> on 160 patients. Whether that gap is</span>
@@ -908,7 +908,7 @@ window.Quarto = {
 <span id="cb7-93"><a href="#cb7-93" aria-hidden="true" tabindex="-1"></a>unsafe at any given threshold.</span>
 <span id="cb7-94"><a href="#cb7-94" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-95"><a href="#cb7-95" aria-hidden="true" tabindex="-1"></a>AUROC sees the order and nothing else. To find out whether the numbers</span>
-<span id="cb7-96"><a href="#cb7-96" aria-hidden="true" tabindex="-1"></a>themselves can be trusted — and whether the <span class="in">`r round(est["V-VI"], 3)`</span> in <span class="in">`V-VI`</span> is real — we need to</span>
+<span id="cb7-96"><a href="#cb7-96" aria-hidden="true" tabindex="-1"></a>themselves can be trusted (and whether the <span class="in">`r round(est["V-VI"], 3)`</span> in <span class="in">`V-VI`</span> is real), we need to</span>
 <span id="cb7-97"><a href="#cb7-97" aria-hidden="true" tabindex="-1"></a>put a confidence interval on it, and then a second question entirely.</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
